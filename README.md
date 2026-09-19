@@ -1,6 +1,6 @@
 # IQ Center — лендинг пробных ЕГЭ/ОГЭ
 
-Next.js 15 + React + Tailwind CSS 4 + Framer Motion. Сайт собирается в статические файлы (`out/`) и работает на обычном хостинге reg.ru. Заявки отправляет `send.php` в Telegram и на почту.
+Next.js 15 + React + Tailwind CSS 4 + Framer Motion. Сайт собирается в статические файлы (`out/`).
 
 ## Команды
 
