@@ -6,6 +6,7 @@ import { goal } from "@/lib/metrika";
 import { PhoneLink, CtaButton } from "../ui/CtaButton";
 import { LeadForm } from "../ui/LeadForm";
 import { Logo } from "./Header";
+import { MetroBadge } from "./MetroBadge";
 
 export function CtaForm() {
   return (
@@ -24,6 +25,7 @@ export function CtaForm() {
             <PhoneLink className="font-display text-lg font-bold text-white" />
             <span className="flex items-center gap-2"><Clock size={17} /> {site.hours}</span>
           </div>
+          <MetroBadge className="mt-5" />
         </div>
         <div className="relative rounded-[28px] bg-night/60 p-6 ring-1 ring-white/10 backdrop-blur sm:p-8">
           <LeadForm source="final" dark />
@@ -46,9 +48,12 @@ export function Contacts() {
               <MapPin className="mt-0.5 shrink-0 text-ink" />
               <span><b className="block font-display">{site.address}</b><span className="text-muted">{site.city}</span></span>
             </li>
-            <li className="flex gap-4">
-              <Train className="mt-0.5 shrink-0 text-ink" />
-              <span className="text-muted">{site.metro}</span>
+            <li className="flex items-center gap-4 rounded-2xl bg-marker/25 p-3">
+              <Train className="ml-1 shrink-0 text-ink" />
+              <span>
+                <b className="block font-display">{site.metroWalk} от м. {site.metroName}</b>
+                <span className="text-sm text-muted">Выход к Каменноостровскому проспекту</span>
+              </span>
             </li>
             <li className="flex gap-4">
               <Phone className="mt-0.5 shrink-0 text-ink" />

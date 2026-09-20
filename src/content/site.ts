@@ -10,7 +10,9 @@ export const site = {
   email: "info@example.ru", // TODO: почта центра
   city: "Санкт-Петербург",
   address: "Каменноостровский просп., 42",
-  metro: "м. Петроградская — 5 минут пешком",
+  // Метро — важное преимущество, вынесено на первый экран. Проверьте время пешком.
+  metroName: "Петроградская",
+  metroWalk: "3 минуты пешком",
   hours: "Пн–Вс, 10:00–20:00",
   url: "https://example.ru", // TODO: домен сайта
   // Координаты для карты (Каменноостровский, 42)
@@ -24,6 +26,8 @@ export const site = {
   // ID счётчика Яндекс.Метрики. Пустая строка — счётчик не подключается.
   metrikaId: "",
 };
+
+export const metroLine = `м. ${site.metroName} — ${site.metroWalk}`;
 
 export type Exam = "ЕГЭ" | "ОГЭ";
 

@@ -1,5 +1,6 @@
 import { MapPin } from "lucide-react";
 import { site } from "@/content/site";
+import { MetroBadge } from "./MetroBadge";
 import { CtaButton } from "../ui/CtaButton";
 import { AnswerSheet } from "./AnswerSheet";
 
@@ -15,10 +16,13 @@ export function Hero() {
       <div className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_top_right,black_20%,transparent_70%)] opacity-70" aria-hidden />
       <div className="mx-auto grid max-w-7xl items-center gap-16 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-sm font-medium shadow-sm">
-            <MapPin size={16} className="text-check" />
-            {site.city}, {site.address}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-sm font-medium shadow-sm">
+              <MapPin size={16} className="text-check" />
+              {site.city}, {site.address}
+            </p>
+            <MetroBadge />
+          </div>
 
           <h1 className="mt-6 font-display text-[2.35rem] leading-[1.02] font-bold tracking-tight sm:text-6xl xl:text-[4.4rem]">
             Пробный{" "}
@@ -62,7 +66,9 @@ export function Hero() {
               Выбрать предмет
             </a>
           </div>
-          <p className="mt-4 text-sm text-muted">{site.metro} · все предметы ЕГЭ и ОГЭ</p>
+          <p className="mt-4 text-sm text-muted">
+            <b className="font-semibold text-text">{site.metroWalk} от метро</b> · все предметы ЕГЭ и ОГЭ
+          </p>
         </div>
 
         <AnswerSheet />
