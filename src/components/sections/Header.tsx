@@ -6,8 +6,6 @@ import { site } from "@/content/site";
 import { CtaButton, PhoneLink } from "../ui/CtaButton";
 
 const nav = [
-  { href: "#how", label: "Как проходит" },
-  { href: "#subjects", label: "Предметы" },
   { href: "#prices", label: "Цены" },
   { href: "#faq", label: "Вопросы" },
   { href: "#contacts", label: "Контакты" },

@@ -5,7 +5,7 @@ import { CtaButton } from "../ui/CtaButton";
 import { AnswerSheet } from "./AnswerSheet";
 
 const points = [
-  "Наблюдатели, досмотр, сдача телефонов и точный тайминг",
+  "Наблюдатели, сдача телефонов и точный тайминг",
   "Настоящие бланки и задания в формате демоверсии ФИПИ",
   "Проверка экспертом и разбор каждой ошибки",
 ];
@@ -60,10 +60,10 @@ export function Hero() {
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <CtaButton source="hero">Записаться на пробник</CtaButton>
             <a
-              href="#subjects"
+              href="#prices"
               className="inline-flex min-h-14 items-center justify-center rounded-2xl border-2 border-text/15 bg-white/60 px-7 font-display text-[15px] font-bold transition hover:border-ink hover:text-ink"
             >
-              Выбрать предмет
+              Узнать стоимость
             </a>
           </div>
           <p className="mt-4 text-sm text-muted">

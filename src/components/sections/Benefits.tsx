@@ -10,7 +10,7 @@ const items = [
 
 export function Benefits() {
   return (
-    <section className="py-16 sm:py-28">
+    <section className="bg-white py-16 sm:py-28">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:gap-14 sm:px-6 lg:grid-cols-2">
         <div>
           <SectionHead
@@ -37,7 +37,7 @@ export function Benefits() {
 
         {/* Мокап отчёта */}
         <Reveal delay={0.1}>
-          <div className="relative rounded-[28px] bg-white p-6 shadow-[var(--shadow-card)] sm:p-8" role="img" aria-label="Пример отчёта по результатам пробного экзамена">
+          <div className="relative rounded-[28px] border-2 border-grid bg-paper p-6 sm:p-8" role="img" aria-label="Пример отчёта по результатам пробного экзамена">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <FileText className="text-ink" />
@@ -47,7 +47,7 @@ export function Benefits() {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-paper p-4">
+              <div className="rounded-2xl bg-white p-4">
                 <p className="text-sm text-muted">Первичный балл</p>
                 <p className="mt-1 font-mono text-3xl font-bold">14<span className="text-lg text-muted">/32</span></p>
               </div>
