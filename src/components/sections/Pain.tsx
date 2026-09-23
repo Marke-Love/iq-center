@@ -21,7 +21,7 @@ const items = [
 
 export function Pain() {
   return (
-    <section className="py-16 sm:py-28">
+    <section className="pt-12 pb-16 sm:pt-16 sm:pb-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHead
           eyebrow="Зачем нужен пробник"
@@ -32,7 +32,7 @@ export function Pain() {
           }
           lead="Даже хорошо подготовленные ученики ошибаются на самом экзамене. Причины — обстановка, время и формальности. Всё это можно отработать заранее."
         />
-        <div className="mt-12 grid gap-5 md:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:mt-12 sm:gap-5 md:grid-cols-2">
           {items.map((it, i) => (
             <Reveal key={it.problem} delay={i * 0.06}>
               <article className="group h-full rounded-[28px] bg-white p-6 shadow-[var(--shadow-card)] transition hover:-translate-y-1 sm:p-8">

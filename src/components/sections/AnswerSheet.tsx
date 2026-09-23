@@ -13,9 +13,17 @@ const answers = [
   { n: 6, v: "7", ok: true },
 ];
 
+// «3 ч 55 мин» → секунды, чтобы таймер шёл от реальной длительности предмета
+export function durationToSeconds(duration: string) {
+  const h = Number(duration.match(/(\d+)\s*ч/)?.[1] ?? 0);
+  const m = Number(duration.match(/(\d+)\s*мин/)?.[1] ?? 0);
+  return h * 3600 + m * 60;
+}
+
 function useCountdown(start: number) {
   const [s, setS] = useState(start);
   useEffect(() => {
+    setS(start);
     const t = setInterval(() => setS((x) => (x > 0 ? x - 1 : start)), 1000);
     return () => clearInterval(t);
   }, [start]);
@@ -25,8 +33,10 @@ function useCountdown(start: number) {
   return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 }
 
-export function AnswerSheet() {
-  const time = useCountdown(3 * 3600 + 55 * 60);
+type Props = { subject: string; duration: string; note?: string };
+
+export function AnswerSheet({ subject, duration, note }: Props) {
+  const time = useCountdown(durationToSeconds(duration));
   const reduce = useReducedMotion();
   const [step, setStep] = useState(reduce ? answers.length * 2 + 1 : 0);
 
@@ -47,11 +57,11 @@ export function AnswerSheet() {
       <div className="absolute inset-0 translate-x-3 translate-y-4 rotate-3 rounded-[28px] bg-ink" aria-hidden />
       <div className="absolute inset-0 -translate-x-2 translate-y-2 -rotate-2 rounded-[28px] bg-marker" aria-hidden />
 
-      <div className="relative overflow-hidden rounded-[28px] border-2 border-ink/80 bg-white p-5 shadow-[var(--shadow-card)] sm:p-7" role="img" aria-label="Бланк ответов пробного экзамена с таймером и отметками проверяющего">
+      <div className="relative overflow-hidden rounded-[28px] border-2 border-ink/80 bg-white p-5 shadow-[var(--shadow-card)] sm:p-7" role="img" aria-label={`Бланк ответов пробного экзамена по предмету «${subject}»: таймер на ${duration} и отметки проверяющего`}>
         <div className="flex items-start justify-between gap-3 border-b-2 border-dashed border-grid pb-4">
           <div>
-            <p className="eyebrow text-muted">Бланк ответов № 1</p>
-            <p className="mt-1 font-display text-lg font-bold text-ink">Математика · профиль</p>
+            <p className="eyebrow text-muted">{note === "на компьютере" ? "Работа на компьютере" : "Бланк ответов № 1"}</p>
+            <p className="mt-1 font-display text-lg leading-tight font-bold text-ink">{subject}</p>
           </div>
           <div className="rounded-xl bg-night px-3 py-2 text-right">
             <p className="font-mono text-[10px] tracking-widest text-white/50 uppercase">осталось</p>
@@ -130,8 +140,8 @@ export function AnswerSheet() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        <p className="font-mono text-[11px] text-white/50 uppercase">Разбор ошибки №3</p>
-        <p className="mt-0.5 text-sm font-semibold">Потерян знак при переносе</p>
+        <p className="font-mono text-[11px] text-white/50 uppercase">После проверки</p>
+        <p className="mt-0.5 text-sm font-semibold">Разберём каждую ошибку</p>
       </motion.div>
     </div>
   );
