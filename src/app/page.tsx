@@ -4,7 +4,7 @@ import { Contacts, CtaForm, Footer, MobileCtaBar } from "@/components/sections/F
 import { Header } from "@/components/sections/Header";
 import { Hero } from "@/components/sections/Hero";
 import { Pain } from "@/components/sections/Pain";
-import { Reviews } from "@/components/sections/People";
+import { Countdown } from "@/components/sections/Countdown";
 import { Pricing } from "@/components/sections/Pricing";
 import { LeadProvider } from "@/components/ui/LeadProvider";
 import { ScrollTop } from "@/components/ui/ScrollTop";
@@ -18,7 +18,7 @@ export default function Home() {
         <Pain />
         <Benefits />
         <Pricing />
-        <Reviews />
+        <Countdown />
         <Faq />
         <CtaForm />
         <Contacts />
