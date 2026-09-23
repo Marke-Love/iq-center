@@ -85,7 +85,7 @@ export function Hero() {
         </div>
 
         {/* выбор предмета: бланк выше показывает реальное время и формат выбранного экзамена */}
-        <div id="subjects" className="mt-10 rounded-[28px] border-2 border-grid bg-white/70 p-4 backdrop-blur-sm sm:mt-12 sm:p-6">
+        <div id="subjects" className="mt-10 rounded-[28px] border-2 border-grid bg-white p-4 sm:mt-12 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-display font-bold">
               Выберите предмет — покажем время и формат

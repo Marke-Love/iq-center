@@ -1,7 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Фирменный элемент: «живой» бланк ответов — идёт время, вписываются ответы, проверяющий ставит отметки.
 const answers = [
@@ -20,13 +19,33 @@ export function durationToSeconds(duration: string) {
   return h * 3600 + m * 60;
 }
 
-function useCountdown(start: number) {
-  const [s, setS] = useState(start);
+// Бланк «живёт» только пока он на экране и вкладка активна — иначе таймер и отметки
+// впустую перерисовывают карточку и подъедают процессор на слабых телефонах.
+function useOnScreen<T extends HTMLElement>(ref: React.RefObject<T | null>) {
+  const [visible, setVisible] = useState(true);
   useEffect(() => {
-    setS(start);
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting));
+    io.observe(el);
+    const onVisibility = () => setVisible(document.visibilityState === "visible" && !document.hidden);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [ref]);
+  return visible;
+}
+
+function useCountdown(start: number, running: boolean) {
+  const [s, setS] = useState(start);
+  useEffect(() => setS(start), [start]);
+  useEffect(() => {
+    if (!running) return;
     const t = setInterval(() => setS((x) => (x > 0 ? x - 1 : start)), 1000);
     return () => clearInterval(t);
-  }, [start]);
+  }, [start, running]);
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
@@ -36,22 +55,24 @@ function useCountdown(start: number) {
 type Props = { subject: string; duration: string; note?: string };
 
 export function AnswerSheet({ subject, duration, note }: Props) {
-  const time = useCountdown(durationToSeconds(duration));
-  const reduce = useReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const onScreen = useOnScreen(rootRef);
+  const time = useCountdown(durationToSeconds(duration), onScreen);
+  const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const [step, setStep] = useState(reduce ? answers.length * 2 + 1 : 0);
 
   useEffect(() => {
-    if (reduce) return;
+    if (reduce || !onScreen) return;
     const t = setInterval(() => setStep((x) => (x >= answers.length * 2 + 6 ? 0 : x + 1)), 550);
     return () => clearInterval(t);
-  }, [reduce]);
+  }, [reduce, onScreen]);
 
   const written = Math.min(step, answers.length);
   const checked = Math.max(0, Math.min(step - answers.length, answers.length));
   const done = step > answers.length * 2;
 
   return (
-    <div className="relative mx-auto w-full max-w-[460px]">
+    <div ref={rootRef} className="relative mx-auto w-full max-w-[460px]">
      <div className="relative">
       {/* подложка — стопка бланков */}
       <div className="absolute inset-0 translate-x-3 translate-y-4 rotate-3 rounded-[28px] bg-ink" aria-hidden />
@@ -96,19 +117,13 @@ export function AnswerSheet({ subject, duration, note }: Props) {
               </span>
               <span className="grid w-7 place-items-center">
                 {i < checked && (
-                  <motion.svg
-                    viewBox="0 0 24 24"
-                    className="size-7 text-check"
-                    initial={{ scale: 0.4, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    aria-hidden
-                  >
+                  <svg viewBox="0 0 24 24" className="size-7 animate-[pop_.25s_ease-out] text-check" aria-hidden>
                     {a.ok ? (
                       <path d="M4 13 L10 18 L20 5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
                     ) : (
                       <path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
                     )}
-                  </motion.svg>
+                  </svg>
                 )}
               </span>
             </li>
@@ -121,28 +136,23 @@ export function AnswerSheet({ subject, duration, note }: Props) {
             <br />
             по критериям ФИПИ
           </p>
-          <motion.div
-            className="self-end rotate-[-8deg] rounded-xl border-[3px] border-check px-3 py-1.5 text-center text-check min-[420px]:self-auto"
-            animate={{ opacity: done ? 1 : 0, scale: done ? 1 : 1.6 }}
-            transition={{ type: "spring", damping: 12, stiffness: 260 }}
+          <div
+            className={`self-end rotate-[-8deg] rounded-xl border-[3px] border-check px-3 py-1.5 text-center text-check transition-[opacity,transform] duration-300 ease-out min-[420px]:self-auto ${
+              done ? "scale-100 opacity-100" : "scale-150 opacity-0"
+            }`}
           >
             <p className="font-display text-xs font-bold tracking-wider uppercase">Проверено</p>
             <p className="font-mono text-2xl leading-none font-bold">5/6</p>
-          </motion.div>
+          </div>
         </div>
       </div>
      </div>
 
       {/* стикер с разбором */}
-      <motion.div
-        className="mt-4 inline-block rotate-[-2deg] rounded-2xl bg-night px-4 py-3 text-white shadow-xl sm:absolute sm:-bottom-6 sm:-left-10 sm:mt-0 sm:rotate-[-4deg]"
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.8 }}
-      >
+      <div className="mt-4 inline-block animate-[fadeUp_.5s_.6s_ease-out_both] rotate-[-2deg] rounded-2xl bg-night px-4 py-3 text-white shadow-xl sm:absolute sm:-bottom-6 sm:-left-10 sm:mt-0 sm:rotate-[-4deg]">
         <p className="font-mono text-[11px] text-white/50 uppercase">После проверки</p>
         <p className="mt-0.5 text-sm font-semibold">Разберём каждую ошибку</p>
-      </motion.div>
+      </div>
     </div>
   );
 }

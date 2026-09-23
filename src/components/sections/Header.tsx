@@ -29,16 +29,27 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 12);
-    on();
+    // раз в кадр, иначе состояние пересчитывается на каждое событие скролла
+    let raf = 0;
+    const on = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        setScrolled(window.scrollY > 12);
+      });
+    };
+    setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
+    return () => {
+      window.removeEventListener("scroll", on);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled || open ? "border-b border-grid bg-paper/90 backdrop-blur-md" : "bg-transparent"
+        scrolled || open ? "border-b border-grid bg-paper/95" : "bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">

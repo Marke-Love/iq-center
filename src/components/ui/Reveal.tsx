@@ -1,54 +1,85 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+
+/*
+  Появление блоков при скролле.
+  Раньше здесь были framer-motion и свой слушатель скролла на каждый блок — на странице
+  их полтора десятка, и каждый на каждом кадре скролла звал getBoundingClientRect.
+  Теперь: одно общее наблюдение за всеми блоками + анимация средствами CSS.
+*/
+
+type Cb = () => void;
+const pending = new Map<Element, Cb>();
+let io: IntersectionObserver | null = null;
+let rafScheduled = false;
+
+function reveal(el: Element) {
+  const cb = pending.get(el);
+  if (!cb) return;
+  pending.delete(el);
+  io?.unobserve(el);
+  cb();
+  if (!pending.size) stopFallback();
+}
+
+// Быстрый скролл может «перепрыгнуть» наблюдатель, поэтому раз в кадр досматриваем остальные
+function onScroll() {
+  if (rafScheduled) return;
+  rafScheduled = true;
+  requestAnimationFrame(() => {
+    rafScheduled = false;
+    const h = window.innerHeight - 40;
+    for (const el of [...pending.keys()]) {
+      if (el.getBoundingClientRect().top < h) reveal(el);
+    }
+  });
+}
+
+function startFallback() {
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
+
+function stopFallback() {
+  window.removeEventListener("scroll", onScroll);
+}
+
+function observe(el: Element, cb: Cb) {
+  io ??= new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.isIntersecting && reveal(e.target)),
+    { rootMargin: "-40px" },
+  );
+  if (!pending.size) startFallback();
+  pending.set(el, cb);
+  io.observe(el);
+}
 
 export function Reveal({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
-  const reduce = useReducedMotion();
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
-    // Блок уже в зоне видимости или выше неё — показываем сразу
-    const check = () => {
-      if (el.getBoundingClientRect().top < window.innerHeight - 40) {
-        setShown(true);
-        return true;
-      }
-      return false;
+    if (el.getBoundingClientRect().top < window.innerHeight - 40) {
+      setShown(true);
+      return;
+    }
+    observe(el, () => setShown(true));
+    return () => {
+      pending.delete(el);
+      io?.unobserve(el);
     };
-    if (check()) return;
-
-    const io = new IntersectionObserver((entries) => entries[0].isIntersecting && setShown(true), { rootMargin: "-40px" });
-    io.observe(el);
-
-    // Быстрый скролл или переход по якорю могут «перепрыгнуть» наблюдатель — подстраховываемся
-    const onScroll = () => {
-      if (check()) cleanup();
-    };
-    const cleanup = () => {
-      io.disconnect();
-      window.removeEventListener("scroll", onScroll);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return cleanup;
   }, []);
 
-  const visible = shown || reduce;
-
   return (
-    <motion.div
+    <div
       ref={ref}
-      className={className}
-      initial={false}
-      animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={{ duration: 0.55, delay: visible ? delay : 0, ease: [0.22, 1, 0.36, 1] }}
+      className={`transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none ${shown ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"} ${className ?? ""}`}
+      style={shown && delay ? { transitionDelay: `${delay}s` } : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 

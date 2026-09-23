@@ -27,7 +27,7 @@ export function CtaForm() {
           </div>
           <MetroBadge className="mt-5" />
         </div>
-        <div className="relative rounded-[28px] bg-night/60 p-6 ring-1 ring-white/10 backdrop-blur sm:p-8">
+        <div className="relative rounded-[28px] bg-night/70 p-6 ring-1 ring-white/10 sm:p-8">
           <LeadForm source="final" dark />
         </div>
       </div>
@@ -119,7 +119,7 @@ export function Footer() {
 
 export function MobileCtaBar() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-grid bg-paper/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md sm:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-grid bg-paper p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
       <a
         href={site.phoneHref}
         onClick={() => goal("click_phone", { source: "mobile_bar" })}

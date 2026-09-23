@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { goal } from "@/lib/metrika";
@@ -39,26 +38,18 @@ export function LeadProvider({ children }: { children: React.ReactNode }) {
   return (
     <Ctx.Provider value={open}>
       {children}
-      <AnimatePresence>
-        {preset && (
-          <motion.div
-            className="fixed inset-0 z-[60] flex items-end justify-center bg-night/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={close}
+      {preset && (
+        <div
+          className="fixed inset-0 z-[60] flex animate-[fadeIn_.2s_ease-out] items-end justify-center bg-night/60 p-0 sm:items-center sm:p-4"
+          onClick={close}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="lead-title"
+            className="relative max-h-[92vh] w-full animate-[fadeUp_.28s_cubic-bezier(.22,1,.36,1)] overflow-y-auto rounded-t-[28px] bg-white p-6 shadow-2xl sm:max-w-lg sm:rounded-[28px] sm:p-8"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="lead-title"
-              className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-[28px] bg-white p-6 shadow-2xl sm:max-w-lg sm:rounded-[28px] sm:p-8"
-              initial={{ y: 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 40, opacity: 0 }}
-              transition={{ type: "spring", damping: 26, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-            >
               <button
                 ref={closeRef}
                 onClick={close}
@@ -75,10 +66,9 @@ export function LeadProvider({ children }: { children: React.ReactNode }) {
               <div className="mt-6">
                 <LeadForm defaultSubject={preset.subject} defaultExam={preset.exam} source={preset.source ?? "modal"} />
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </Ctx.Provider>
   );
 }
