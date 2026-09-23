@@ -1,9 +1,7 @@
 import { Check } from "lucide-react";
-import { plans } from "@/content/site";
-import { CtaButton } from "../ui/CtaButton";
+import { pricing, site } from "@/content/site";
+import { CtaButton, PhoneLink } from "../ui/CtaButton";
 import { Reveal, SectionHead } from "../ui/Reveal";
-
-const rub = (n: number) => n.toLocaleString("ru-RU") + " ₽";
 
 export function Pricing() {
   return (
@@ -11,48 +9,45 @@ export function Pricing() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHead
           eyebrow="Стоимость"
-          title="Выберите формат"
-          lead="В каждый формат входят экзамен, проверка экспертом и разбор. Бланки и задания — наши."
+          title="Одна цена за пробный экзамен"
+          lead="Без пакетов и скрытых доплат: экзамен, проверка экспертом и разбор входят в стоимость."
         />
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          {plans.map((p, i) => (
-            <Reveal key={p.id} delay={i * 0.07}>
-              <article
-                className={`relative flex h-full flex-col rounded-[28px] p-7 sm:p-8 ${
-                  p.accent ? "bg-ink text-white shadow-[0_30px_60px_-30px_var(--color-ink)] lg:-translate-y-3" : "bg-white shadow-[var(--shadow-card)]"
-                }`}
-              >
-                {p.badge && (
-                  <span className="absolute -top-3.5 right-6 rotate-3 rounded-full bg-marker px-4 py-1.5 font-display text-xs font-bold text-night">
-                    {p.badge}
-                  </span>
-                )}
-                <h3 className="font-display text-xl font-bold">{p.title}</h3>
-                <div className="mt-5 flex items-baseline gap-2">
-                  {p.price ? (
-                    <>
-                      <span className="font-mono text-4xl font-bold">{rub(p.price)}</span>
-                      <span className={p.accent ? "text-white/60" : "text-muted"}>{p.unit}</span>
-                    </>
-                  ) : (
-                    <span className={`font-display text-xl font-bold ${p.accent ? "text-marker" : "text-ink"}`}>Стоимость по телефону</span>
-                  )}
-                </div>
-                <ul className="mt-6 grid flex-1 content-start gap-3">
-                  {p.features.map((f) => (
-                    <li key={f} className="flex gap-3">
-                      <Check size={20} className={`mt-0.5 shrink-0 ${p.accent ? "text-marker" : "text-check"}`} strokeWidth={3} />
-                      <span className={p.accent ? "text-white/85" : "text-muted"}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <CtaButton source={`price_${p.id}`} variant={p.accent ? "marker" : "ink"} className="mt-8 w-full">
-                  {p.price ? "Записаться" : "Узнать стоимость"}
+
+        <Reveal className="mt-10">
+          <div className="grid overflow-hidden rounded-[32px] bg-white shadow-[var(--shadow-card)] lg:grid-cols-[0.85fr_1.15fr]">
+            {/* цена */}
+            <div className="relative flex flex-col justify-center bg-ink p-8 text-white sm:p-10">
+              <div className="bg-grid pointer-events-none absolute inset-0 opacity-[0.08]" aria-hidden />
+              <div className="relative">
+                <p className="eyebrow text-marker">{pricing.unit}</p>
+                <p className="mt-3 font-mono text-6xl leading-none font-bold sm:text-7xl">
+                  {pricing.price.toLocaleString("ru-RU")}&nbsp;₽
+                </p>
+                <CtaButton source="prices" variant="marker" className="mt-8 w-full px-5! sm:w-auto sm:px-7!">
+                  Записаться
                 </CtaButton>
-              </article>
-            </Reveal>
-          ))}
-        </div>
+                <p className="mt-5 text-sm text-white/70">
+                  Вопросы по записи: <PhoneLink withIcon={false} className="font-display font-bold text-white" />
+                </p>
+              </div>
+            </div>
+
+            {/* что входит */}
+            <div className="p-8 sm:p-10">
+              <p className="font-display text-lg font-bold">Что входит</p>
+              <ul className="mt-6 grid gap-3.5 sm:grid-cols-2">
+                {pricing.features.map((f) => (
+                  <li key={f} className="flex gap-3">
+                    <Check size={20} className="mt-0.5 shrink-0 text-check" strokeWidth={3} />
+                    <span className="text-muted">{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-7 border-t border-grid pt-5 text-sm text-muted">{pricing.note}</p>
+              <p className="mt-2 text-sm text-muted">{site.metroWalk} от м. {site.metroName}</p>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Onest, Unbounded } from "next/font/google";
 import Script from "next/script";
-import { faq, site } from "@/content/site";
+import { faq, pricing, site } from "@/content/site";
 import "./globals.css";
 
 const unbounded = Unbounded({ subsets: ["latin", "cyrillic"], weight: ["600", "700"], variable: "--font-unbounded", display: "swap" });
@@ -10,7 +10,7 @@ const mono = JetBrains_Mono({ subsets: ["latin", "cyrillic"], weight: ["500", "7
 
 const title = "Пробный ЕГЭ и ОГЭ в Санкт-Петербурге — как на настоящем экзамене | " + site.name;
 const description =
-  "Пробные экзамены ЕГЭ и ОГЭ по всем предметам в условиях реального экзамена: наблюдатели, бланки, тайминг. Проверка экспертами по критериям ФИПИ и разбор ошибок. 3 минуты пешком от метро Петроградская.";
+  "Пробные экзамены ЕГЭ и ОГЭ по всем предметам в условиях реального экзамена: бланки, регламент, тайминг. Проверка экспертами по критериям ФИПИ и разбор ошибок. 3 минуты пешком от метро Петроградская.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -31,9 +31,23 @@ const jsonLd = [
     description,
     url: site.url,
     telephone: site.phone,
-    address: { "@type": "PostalAddress", streetAddress: site.address, addressLocality: site.city, addressCountry: "RU" },
+    address: { "@type": "PostalAddress", streetAddress: site.address, addressLocality: site.city, postalCode: site.postalCode, addressCountry: "RU" },
     geo: { "@type": "GeoCoordinates", latitude: site.geo.lat, longitude: site.geo.lon },
     openingHours: "Mo-Su 10:00-20:00",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Пробный экзамен ЕГЭ или ОГЭ",
+    provider: { "@type": "EducationalOrganization", name: site.name },
+    areaServed: site.city,
+    offers: {
+      "@type": "Offer",
+      price: pricing.price,
+      priceCurrency: "RUB",
+      availability: "https://schema.org/InStock",
+      url: site.url,
+    },
   },
   {
     "@context": "https://schema.org",

@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, MapPin, Phone, Send, Train } from "lucide-react";
+import { Clock, MapPin, MessageCircle, Phone, Send, Train } from "lucide-react";
 import { site } from "@/content/site";
 import { goal } from "@/lib/metrika";
 import { PhoneLink, CtaButton } from "../ui/CtaButton";
@@ -68,15 +68,15 @@ export function Contacts() {
             <a href={site.telegram} target="_blank" rel="noopener" onClick={() => goal("click_messenger", { m: "tg" })} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-paper px-4 font-medium transition hover:bg-ink-soft">
               <Send size={18} className="text-ink" /> Telegram
             </a>
-            <a href={site.whatsapp} target="_blank" rel="noopener" onClick={() => goal("click_messenger", { m: "wa" })} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-paper px-4 font-medium transition hover:bg-ink-soft">
-              <Phone size={18} className="text-ink" /> WhatsApp
+            <a href={site.max} target="_blank" rel="noopener" onClick={() => goal("click_messenger", { m: "max" })} className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-paper px-4 font-medium transition hover:bg-ink-soft">
+              <MessageCircle size={18} className="text-ink" /> MAX
             </a>
           </div>
         </div>
         <div className="min-h-[360px] overflow-hidden rounded-[28px] bg-ink-soft shadow-[var(--shadow-card)]">
           <iframe
             title={`Карта: ${site.address}`}
-            src={`https://yandex.ru/map-widget/v1/?ll=${lon}%2C${lat}&z=16&pt=${lon}%2C${lat}%2Cpm2rdm`}
+            src={`https://yandex.ru/map-widget/v1/?ll=${lon}%2C${lat}&z=17&pt=${lon}%2C${lat}%2Cpm2rdm`}
             className="h-full min-h-[360px] w-full border-0"
             loading="lazy"
             allowFullScreen
