@@ -69,6 +69,71 @@ export const subjects: Record<Exam, { name: string; duration: string; note?: str
   ],
 };
 
+// Бланки в «веере» на первом экране — четыре ключевых предмета.
+// answers: что вписано в клетки (до 6 символов) и засчитал ли эксперт ответ.
+export const examDeck = [
+  {
+    subject: "Математика профиль",
+    short: "Математика",
+    exam: "ЕГЭ",
+    duration: "3 ч 55 мин",
+    note: undefined as string | undefined,
+    answers: [
+      { v: "0,75", ok: true },
+      { v: "14", ok: true },
+      { v: "\u22123", ok: false },
+      { v: "0,2", ok: true },
+      { v: "256", ok: true },
+      { v: "7", ok: true },
+    ],
+  },
+  {
+    subject: "Русский язык",
+    short: "Русский",
+    exam: "ЕГЭ",
+    duration: "3 ч 30 мин",
+    note: undefined as string | undefined,
+    answers: [
+      { v: "235", ok: true },
+      { v: "ОДНАКО", ok: true },
+      { v: "14", ok: true },
+      { v: "45", ok: false },
+      { v: "125", ok: true },
+      { v: "3", ok: true },
+    ],
+  },
+  {
+    subject: "История",
+    short: "История",
+    exam: "ЕГЭ",
+    duration: "3 ч 30 мин",
+    note: undefined as string | undefined,
+    answers: [
+      { v: "1242", ok: true },
+      { v: "35", ok: true },
+      { v: "146", ok: true },
+      { v: "24", ok: false },
+      { v: "1812", ok: true },
+      { v: "5", ok: true },
+    ],
+  },
+  {
+    subject: "Информатика",
+    short: "Информатика",
+    exam: "ЕГЭ",
+    duration: "3 ч 55 мин",
+    note: "на компьютере" as string | undefined,
+    answers: [
+      { v: "25", ok: true },
+      { v: "10011", ok: true },
+      { v: "128", ok: true },
+      { v: "6", ok: true },
+      { v: "45", ok: false },
+      { v: "3", ok: true },
+    ],
+  },
+];
+
 // Единая цена за один пробный экзамен. Меняется здесь — и на сайте, и в разметке для поиска.
 export const pricing = {
   price: 3500,
