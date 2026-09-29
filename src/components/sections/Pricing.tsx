@@ -8,33 +8,37 @@ export function Pricing() {
     <section id="prices" className="py-16 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHead
-          eyebrow="Стоимость"
-          title="Одна цена за пробный экзамен"
-          lead="Без пакетов и скрытых доплат: экзамен, проверка экспертом и разбор входят в стоимость."
+          eyebrow="Что входит"
+          title="Одна запись — всё включено"
+          lead="Экзамен, проверка экспертом и разбор ошибок — в одной записи, без пакетов и доплат."
         />
 
         <Reveal className="mt-10">
           <div className="grid overflow-hidden rounded-[32px] bg-white shadow-[var(--shadow-card)] lg:grid-cols-[0.85fr_1.15fr]">
-            {/* цена */}
+            {/* запись — главное действие блока */}
             <div className="relative flex flex-col justify-center bg-ink p-8 text-white sm:p-10">
               <div className="bg-grid pointer-events-none absolute inset-0 opacity-[0.08]" aria-hidden />
               <div className="relative">
-                <p className="eyebrow text-marker">{pricing.unit}</p>
-                <p className="mt-3 font-mono text-6xl leading-none font-bold sm:text-7xl">
-                  {pricing.price.toLocaleString("ru-RU")}&nbsp;₽
+                <p className="eyebrow text-marker">Запись открыта</p>
+                <p className="mt-3 font-display text-3xl leading-[1.1] font-bold text-balance sm:text-4xl">
+                  Выберите предмет и&nbsp;дату — остальное за&nbsp;нами
                 </p>
-                <CtaButton source="prices" variant="marker" className="mt-8 w-full px-5! sm:w-auto sm:px-7!">
+                <CtaButton
+                  source="prices"
+                  variant="marker"
+                  className="mt-8 min-h-16! w-full text-lg! shadow-[0_18px_40px_-16px_var(--color-marker)] sm:min-h-[72px]! sm:text-xl!"
+                >
                   Записаться
                 </CtaButton>
                 <p className="mt-5 text-sm text-white/70">
-                  Вопросы по записи: <PhoneLink withIcon={false} className="font-display font-bold text-white" />
+                  Или позвоните: <PhoneLink withIcon={false} className="font-display font-bold text-white" />
                 </p>
               </div>
             </div>
 
-            {/* что входит */}
+            {/* состав услуги */}
             <div className="p-8 sm:p-10">
-              <p className="font-display text-lg font-bold">Что входит</p>
+              <p className="font-display text-lg font-bold">В пробник входит</p>
               <ul className="mt-6 grid gap-3.5 sm:grid-cols-2">
                 {pricing.features.map((f) => (
                   <li key={f} className="flex gap-3">
@@ -44,7 +48,9 @@ export function Pricing() {
                 ))}
               </ul>
               <p className="mt-7 border-t border-grid pt-5 text-sm text-muted">{pricing.note}</p>
-              <p className="mt-2 text-sm text-muted">{site.metroWalk} от м. {site.metroName}</p>
+              <p className="mt-2 text-sm text-muted">
+                {site.metroWalk} от м. {site.metroName}
+              </p>
             </div>
           </div>
         </Reveal>

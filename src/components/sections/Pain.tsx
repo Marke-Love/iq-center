@@ -40,8 +40,7 @@ export function Pain() {
                   <svg viewBox="0 0 24 24" className="mt-1 size-5 shrink-0 text-check" aria-hidden>
                     <path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
                   </svg>
-                  {/* волнистая линия — как пометка ошибки красной ручкой, но текст остаётся читаемым */}
-                  <span className="underline decoration-check/70 decoration-wavy decoration-2 underline-offset-[6px]">{it.problem}</span>
+                  <span>{it.problem}</span>
                 </p>
                 <p className="mt-4 flex gap-3 text-muted">
                   <svg viewBox="0 0 24 24" className="mt-0.5 size-5 shrink-0 text-ink" aria-hidden>

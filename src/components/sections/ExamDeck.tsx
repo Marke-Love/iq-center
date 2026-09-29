@@ -170,6 +170,25 @@ export function ExamDeck() {
 
   return (
     <div ref={rootRef} className="relative mx-auto w-full max-w-[460px]">
+      {/* переключатели предметов — они же индикаторы веера */}
+      <div className="relative z-50 mb-6 grid grid-cols-2 gap-1.5 sm:mb-7 sm:grid-cols-4 sm:gap-2">
+        {examDeck.map((blank, i) => (
+          <button
+            key={blank.subject}
+            onClick={() => {
+              setFront(i);
+              setManual(true);
+            }}
+            aria-pressed={i === front}
+            className={`min-h-10 w-full rounded-full border-2 px-1 font-display text-[11px] font-bold whitespace-nowrap transition ${
+              i === front ? "border-ink bg-ink text-white" : "border-grid bg-white/70 text-muted hover:border-ink hover:text-ink"
+            }`}
+          >
+            {blank.short}
+          </button>
+        ))}
+      </div>
+
       {/* веер: все бланки в одной ячейке грида, слои задаются трансформом */}
       <div className="relative grid">
         {examDeck.map((blank, i) => {
@@ -197,24 +216,6 @@ export function ExamDeck() {
         </div>
       </div>
 
-      {/* переключатели предметов — они же индикаторы веера */}
-      <div className="mt-16 grid grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2">
-        {examDeck.map((blank, i) => (
-          <button
-            key={blank.subject}
-            onClick={() => {
-              setFront(i);
-              setManual(true);
-            }}
-            aria-pressed={i === front}
-            className={`min-h-10 w-full rounded-full border-2 px-1 font-display text-[11px] font-bold whitespace-nowrap transition ${
-              i === front ? "border-ink bg-ink text-white" : "border-grid bg-white/70 text-muted hover:border-ink hover:text-ink"
-            }`}
-          >
-            {blank.short}
-          </button>
-        ))}
-      </div>
 
     </div>
   );

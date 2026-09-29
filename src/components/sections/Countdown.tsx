@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { examDates, pricing, type Exam } from "@/content/site";
 import { CtaButton } from "../ui/CtaButton";
 import { Reveal, SectionHead } from "../ui/Reveal";
 
@@ -16,44 +12,9 @@ const before = [
 const after = [
   "Заполнял бланки по регламенту — рука уже помнит",
   "Знает, на каких заданиях теряет минуты",
-  "Видел, за что эксперт снимает баллы",
+  "Понимает, за что эксперт снимает баллы",
   "Есть баллы по шкале ФИПИ и план, что подтянуть",
 ];
-
-function daysLeft(date: string) {
-  const diff = new Date(date + "T10:00:00+03:00").getTime() - Date.now();
-  return Math.max(0, Math.ceil(diff / 86_400_000));
-}
-
-function plural(n: number, forms: [string, string, string]) {
-  const n10 = n % 10;
-  const n100 = n % 100;
-  if (n10 === 1 && n100 !== 11) return forms[0];
-  if (n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 >= 20)) return forms[1];
-  return forms[2];
-}
-
-function DaysCard({ exam, date }: { exam: Exam; date: string }) {
-  // считаем на клиенте: на сервере дата сборки, а не дата визита
-  const [days, setDays] = useState<number | null>(null);
-
-  useEffect(() => {
-    const update = () => setDays(daysLeft(date));
-    update();
-    const t = setInterval(update, 60_000);
-    return () => clearInterval(t);
-  }, [date]);
-
-  return (
-    <div className="flex items-baseline gap-3 rounded-2xl bg-white/[0.06] px-5 py-4">
-      <span className="font-display text-sm font-bold text-white/70">{exam}</span>
-      <span className="font-mono text-4xl leading-none font-bold text-marker tabular-nums sm:text-5xl">
-        {days ?? "—"}
-      </span>
-      <span className="text-white/60">{days === null ? "дней" : plural(days, ["день", "дня", "дней"])}</span>
-    </div>
-  );
-}
 
 export function Countdown() {
   return (
@@ -67,14 +28,8 @@ export function Countdown() {
           lead="Первый раз увидеть бланк и услышать «время пошло» можно у нас — или в день, когда результат идёт в аттестат."
         />
 
-        <Reveal className="mt-8">
-          <div className="flex flex-wrap gap-3">
-            <DaysCard exam="ЕГЭ" date={examDates.ЕГЭ} />
-            <DaysCard exam="ОГЭ" date={examDates.ОГЭ} />
-          </div>
-        </Reveal>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-2">
+        <div className="mt-10 grid gap-5 sm:mt-12 lg:grid-cols-2">
           <Reveal>
             <div className="h-full rounded-[28px] border border-white/10 p-7 sm:p-8">
               <p className="eyebrow text-white/50">Без пробника</p>
@@ -114,7 +69,7 @@ export function Countdown() {
               Пусть первый экзамен пройдёт там, где ошибка ничего не стоит
             </p>
             <CtaButton source="countdown" variant="ink" className="w-full sm:w-auto">
-              Записаться за {pricing.price.toLocaleString("ru-RU")} ₽
+              Записаться на пробник
             </CtaButton>
           </div>
         </Reveal>

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Onest, Unbounded } from "next/font/google";
 import Script from "next/script";
-import { faq, pricing, site } from "@/content/site";
+import { faq, site } from "@/content/site";
 import "./globals.css";
 
 const unbounded = Unbounded({ subsets: ["latin", "cyrillic"], weight: ["600", "700"], variable: "--font-unbounded", display: "swap" });
@@ -41,13 +41,6 @@ const jsonLd = [
     name: "Пробный экзамен ЕГЭ или ОГЭ",
     provider: { "@type": "EducationalOrganization", name: site.name },
     areaServed: site.city,
-    offers: {
-      "@type": "Offer",
-      price: pricing.price,
-      priceCurrency: "RUB",
-      availability: "https://schema.org/InStock",
-      url: site.url,
-    },
   },
   {
     "@context": "https://schema.org",

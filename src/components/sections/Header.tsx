@@ -6,18 +6,19 @@ import { site } from "@/content/site";
 import { CtaButton, PhoneLink } from "../ui/CtaButton";
 
 const nav = [
-  { href: "#prices", label: "Цены" },
+  { href: "#prices", label: "Что входит" },
   { href: "#faq", label: "Вопросы" },
   { href: "#contacts", label: "Контакты" },
 ];
 
 export function Logo({ light }: { light?: boolean }) {
   return (
-    <a href="#top" className="flex items-center gap-2.5" aria-label={`${site.name} — наверх`}>
+    <a href="#top" className="flex items-center gap-2.5" aria-label={`${site.tagline} — наверх`}>
       <span className="grid size-10 place-items-center rounded-xl bg-ink font-mono text-sm font-bold text-marker">IQ</span>
-      <span className="leading-none whitespace-nowrap">
-        <span className={`block font-display text-[15px] font-bold ${light ? "text-white" : ""}`}>{site.name}</span>
-        <span className={`mt-1 block text-xs ${light ? "text-white/60" : "text-muted"}`}>{site.tagline}</span>
+      <span className={`font-display text-[15px] leading-[1.15] font-bold ${light ? "text-white" : ""}`}>
+        Пробные
+        <br />
+        <span className={light ? "text-marker" : "text-ink"}>ЕГЭ и ОГЭ</span>
       </span>
     </a>
   );

@@ -1,6 +1,5 @@
-import { MapPin } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 import { site } from "@/content/site";
-import { MetroBadge } from "./MetroBadge";
 import { CtaButton } from "../ui/CtaButton";
 import { ExamDeck } from "./ExamDeck";
 
@@ -19,11 +18,24 @@ export function Hero() {
         <div className="grid items-center gap-10 sm:gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <p className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-sm font-medium shadow-sm">
-                <MapPin size={16} className="text-check" />
-                {site.city}, {site.address}
+              {/* адрес и метро — одна плашка: «где» целиком */}
+              <p className="inline-flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-2xl bg-white px-3.5 py-2 text-sm font-medium shadow-sm">
+                <span className="inline-flex items-center gap-2">
+                  <MapPin size={16} className="shrink-0 text-check" />
+                  СПб, {site.address}
+                </span>
+                <span className="hidden h-4 w-px bg-grid sm:block" aria-hidden />
+                <span className="inline-flex items-center gap-2 font-bold">
+                  <span aria-hidden className="grid size-5 shrink-0 place-items-center rounded-full bg-marker font-display text-[11px] leading-none text-night">
+                    М
+                  </span>
+                  {site.metroName} — {site.metroWalk}
+                </span>
               </p>
-              <MetroBadge />
+              <p className="inline-flex items-center gap-2 rounded-2xl bg-ink px-3.5 py-2 text-sm font-bold text-white shadow-sm">
+                <Users size={16} className="shrink-0 text-marker" />
+                Очно, в аудитории центра
+              </p>
             </div>
 
             <h1 className="mt-6 font-display text-[2.35rem] leading-[1.02] font-bold tracking-tight sm:text-6xl xl:text-[4.4rem]">
@@ -65,7 +77,7 @@ export function Hero() {
                 href="#prices"
                 className="inline-flex min-h-14 items-center justify-center rounded-2xl border-2 border-text/15 bg-white/60 px-7 font-display text-[15px] font-bold transition hover:border-ink hover:text-ink"
               >
-                Узнать стоимость
+                Что входит
               </a>
             </div>
           </div>
