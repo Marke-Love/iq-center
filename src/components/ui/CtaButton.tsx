@@ -15,7 +15,7 @@ type Props = {
 };
 
 const styles = {
-  primary: "bg-check text-white shadow-[0_12px_30px_-12px_var(--color-check)] hover:brightness-105",
+  primary: "border-2 border-night bg-marker text-night shadow-[4px_4px_0_var(--color-night)] hover:shadow-[6px_6px_0_var(--color-night)]",
   ink: "bg-ink text-white shadow-[0_12px_30px_-12px_var(--color-ink)] hover:bg-ink-deep",
   marker: "bg-marker text-night hover:brightness-95",
   ghost: "border-2 border-text/15 bg-white/60 text-text hover:border-ink hover:text-ink",

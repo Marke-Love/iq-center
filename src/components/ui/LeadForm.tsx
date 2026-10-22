@@ -145,7 +145,7 @@ export function LeadForm({ defaultSubject, defaultExam, source, dark }: Props) {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-check px-6 font-display text-base font-bold text-white shadow-[0_10px_30px_-10px_var(--color-check)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-70"
+        className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border-2 border-night bg-marker px-6 font-display text-base font-bold text-night shadow-[4px_4px_0_var(--color-night)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-70"
       >
         {status === "sending" ? <Loader2 className="animate-spin" size={20} /> : null}
         {status === "sending" ? "Отправляем…" : "Записаться"}

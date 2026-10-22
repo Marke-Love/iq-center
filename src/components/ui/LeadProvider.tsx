@@ -60,7 +60,7 @@ export function LeadProvider({ children }: { children: React.ReactNode }) {
               </button>
               <p className="eyebrow text-check">Запись на пробник</p>
               <h2 id="lead-title" className="mt-2 pr-10 font-display text-2xl leading-tight font-bold">
-                Оставьте телефон — подберём дату и&nbsp;предмет
+                Оставьте телефон, и мы подберём дату и&nbsp;предмет
               </h2>
               <p className="mt-2 text-muted">Перезвоним в течение 15 минут в рабочее время.</p>
               <div className="mt-6">

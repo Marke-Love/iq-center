@@ -1,12 +1,13 @@
 "use client";
 
-import { Clock, MapPin, MessageCircle, Phone, Send, Train } from "lucide-react";
+import { Clock, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import { site } from "@/content/site";
 import { goal } from "@/lib/metrika";
 import { PhoneLink, CtaButton } from "../ui/CtaButton";
 import { LeadForm } from "../ui/LeadForm";
 import { Logo } from "./Header";
 import { MetroBadge } from "./MetroBadge";
+import { MetroIcon } from "../ui/MetroIcon";
 
 export function CtaForm() {
   return (
@@ -19,7 +20,7 @@ export function CtaForm() {
             Узнайте свои баллы до&nbsp;экзамена
           </h2>
           <p className="mt-5 max-w-md text-lg text-white/75">
-            Оставьте телефон — администратор перезвонит, подберёт дату и расскажет, что взять с собой.
+            Оставьте телефон. Администратор перезвонит, подберёт предмет и удобную дату.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-white/80">
             <PhoneLink className="font-display text-lg font-bold text-white" />
@@ -46,10 +47,10 @@ export function Contacts() {
           <ul className="mt-8 grid gap-5">
             <li className="flex gap-4">
               <MapPin className="mt-0.5 shrink-0 text-ink" />
-              <span><b className="block font-display">{site.address}</b><span className="text-muted">{site.city}</span></span>
+              <span><b className="block font-display">{site.landmark}</b><span className="text-muted">{site.address}, {site.city}</span></span>
             </li>
             <li className="flex items-center gap-4 rounded-2xl bg-marker/25 p-3">
-              <Train className="ml-1 shrink-0 text-ink" />
+              <MetroIcon className="ml-0.5 size-6" />
               <span>
                 <b className="block font-display">{site.metroWalk} от м. {site.metroName}</b>
                 <span className="text-sm text-muted">Выход к Каменноостровскому проспекту</span>
@@ -107,7 +108,7 @@ export function Footer() {
             <a href="/privacy/" className="mt-2 underline underline-offset-2 hover:text-white">Политика обработки персональных данных</a>
           </div>
           <p className="text-white/50 md:text-right">
-            Пробные экзамены — платная образовательная услуга. {site.name} не является пунктом проведения экзаменов и не связан
+            Пробные экзамены являются платной образовательной услугой. {site.name} не является пунктом проведения экзаменов и не связан
             с ФИПИ и Рособрнадзором. Результат пробника не влияет на официальные результаты ЕГЭ и ОГЭ.
             <br />© {new Date().getFullYear()} {site.name}
           </p>

@@ -1,16 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Onest, Unbounded } from "next/font/google";
 import Script from "next/script";
-import { faq, site } from "@/content/site";
+import { faq, pricing, site } from "@/content/site";
 import "./globals.css";
 
 const unbounded = Unbounded({ subsets: ["latin", "cyrillic"], weight: ["600", "700"], variable: "--font-unbounded", display: "swap" });
 const onest = Onest({ subsets: ["latin", "cyrillic"], weight: ["400", "500", "600", "700"], variable: "--font-onest", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin", "cyrillic"], weight: ["500", "700"], variable: "--font-jetbrains", display: "swap" });
 
-const title = "Пробный ЕГЭ и ОГЭ в Санкт-Петербурге — как на настоящем экзамене | " + site.name;
+const title = "Пробный ЕГЭ и ОГЭ в Санкт-Петербурге: как на настоящем экзамене | " + site.name;
 const description =
-  "Пробные экзамены ЕГЭ и ОГЭ по всем предметам в условиях реального экзамена: бланки, регламент, тайминг. Проверка экспертами по критериям ФИПИ и разбор ошибок. 3 минуты пешком от метро Петроградская.";
+  "Пробные экзамены ЕГЭ и ОГЭ по всем предметам в условиях реального экзамена: бланки, регламент, тайминг. Проверка экспертами по критериям ФИПИ и разбор ошибок. ДК имени Ленсовета, 3 минуты пешком от метро Петроградская.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -41,6 +41,13 @@ const jsonLd = [
     name: "Пробный экзамен ЕГЭ или ОГЭ",
     provider: { "@type": "EducationalOrganization", name: site.name },
     areaServed: site.city,
+    offers: {
+      "@type": "Offer",
+      price: pricing.price,
+      priceCurrency: "RUB",
+      availability: "https://schema.org/InStock",
+      url: site.url,
+    },
   },
   {
     "@context": "https://schema.org",

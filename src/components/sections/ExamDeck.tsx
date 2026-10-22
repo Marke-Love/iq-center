@@ -98,7 +98,7 @@ function BlankCard({ blank, active, step, time, edge }: { blank: Blank; active: 
             </span>
             <span className="grid w-7 place-items-center">
               {i < checked && (
-                <svg viewBox="0 0 24 24" className={`size-7 text-check ${active ? "animate-[pop_.25s_ease-out]" : ""}`} aria-hidden>
+                <svg viewBox="0 0 24 24" className={`size-7 ${a.ok ? "text-ok" : "text-wrong"} ${active ? "animate-[pop_.25s_ease-out]" : ""}`} aria-hidden>
                   {a.ok ? (
                     <path d="M4 13 L10 18 L20 5" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
                   ) : (
@@ -118,8 +118,9 @@ function BlankCard({ blank, active, step, time, edge }: { blank: Blank; active: 
           по критериям ФИПИ
         </p>
         <div
-          className={`self-end rotate-[-8deg] rounded-xl border-[3px] border-check px-3 py-1.5 text-center text-check transition-[opacity,transform] duration-300 ease-out min-[420px]:self-auto ${
-            done ? "scale-100 opacity-100" : "scale-150 opacity-0"
+          className={`self-end rotate-[-8deg] rounded-xl border-[3px] border-check px-3 py-1.5 text-center text-check min-[420px]:self-auto ${
+            // штамп «шлёпается» с анимацией, а при смене бланка исчезает сразу, без затухания
+            done ? "scale-100 opacity-100 transition-[opacity,transform] duration-300 ease-out" : "scale-150 opacity-0"
           }`}
         >
           <p className="font-display text-xs font-bold tracking-wider uppercase">Проверено</p>
@@ -136,25 +137,25 @@ export function ExamDeck() {
   const rootRef = useRef<HTMLDivElement>(null);
   const onScreen = useOnScreen(rootRef);
   const [front, setFront] = useState(0);
-  // после ручного выбора автолистание выключаем — иначе бланк «уезжает» из-под пользователя
-  const [manual, setManual] = useState(false);
   const [step, setStep] = useState(0);
   const [seconds, setSeconds] = useState(() => durationToSeconds(examDeck[0].duration));
 
   const active = examDeck[front];
+  const frontRef = useRef(0);
 
-  // перебор бланков: верхний уходит в конец веера
+  // перебор бланков: верхний уходит в конец веера.
+  // Шаг и таймер сбрасываем в том же обновлении, иначе на новом бланке на миг мелькает штамп прошлого.
   useEffect(() => {
-    if (!onScreen || manual) return;
-    const t = setInterval(() => setFront((f) => (f + 1) % examDeck.length), 7000);
+    if (!onScreen) return;
+    const t = setInterval(() => {
+      const next = (frontRef.current + 1) % examDeck.length;
+      frontRef.current = next;
+      setFront(next);
+      setStep(0);
+      setSeconds(durationToSeconds(examDeck[next].duration));
+    }, 7000);
     return () => clearInterval(t);
-  }, [onScreen, manual]);
-
-  // заполнение и проверка верхнего бланка
-  useEffect(() => {
-    setStep(0);
-    setSeconds(durationToSeconds(active.duration));
-  }, [active]);
+  }, [onScreen]);
 
   useEffect(() => {
     if (!onScreen) return;
@@ -170,24 +171,6 @@ export function ExamDeck() {
 
   return (
     <div ref={rootRef} className="relative mx-auto w-full max-w-[460px]">
-      {/* переключатели предметов — они же индикаторы веера */}
-      <div className="relative z-50 mb-6 grid grid-cols-2 gap-1.5 sm:mb-7 sm:grid-cols-4 sm:gap-2">
-        {examDeck.map((blank, i) => (
-          <button
-            key={blank.subject}
-            onClick={() => {
-              setFront(i);
-              setManual(true);
-            }}
-            aria-pressed={i === front}
-            className={`min-h-10 w-full rounded-full border-2 px-1 font-display text-[11px] font-bold whitespace-nowrap transition ${
-              i === front ? "border-ink bg-ink text-white" : "border-grid bg-white/70 text-muted hover:border-ink hover:text-ink"
-            }`}
-          >
-            {blank.short}
-          </button>
-        ))}
-      </div>
 
       {/* веер: все бланки в одной ячейке грида, слои задаются трансформом */}
       <div className="relative grid">

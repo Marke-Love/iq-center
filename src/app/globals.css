@@ -16,6 +16,8 @@
   --color-grid: #cfd4f5;
   --color-marker: #d4ff3a;
   --color-check: #ff5a1f;
+  --color-ok: #16a34a;
+  --color-wrong: #e11d2e;
   --color-night: #10102e;
   --color-text: #12122b;
   --color-muted: #5a5d80;
@@ -34,7 +36,12 @@ html {
 }
 
 body {
-  background: var(--color-paper);
+  /* вся страница — лист в клетку: тонкие линии фирменного синего */
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(rgba(45, 45, 240, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45, 45, 240, 0.075) 1px, transparent 1px);
+  background-size: 28px 28px;
   color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -134,3 +141,21 @@ body {
   }
 }
 
+
+/* Зачёркнутое красной ручкой слово: «а не онлайн» */
+.pen-strike {
+  position: relative;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.pen-strike::after {
+  content: "";
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  top: 55%;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-check);
+  transform: rotate(-7deg);
+}

@@ -14,7 +14,7 @@ export function Faq() {
         <div>
           <SectionHead eyebrow="Вопросы" title="Частые вопросы родителей и учеников" />
           <p className="mt-6 text-muted">
-            Не нашли ответ? Позвоните: <PhoneLink withIcon={false} className="font-bold text-ink" /> — {site.hours.toLowerCase()}.
+            Не нашли ответ? Позвоните: <PhoneLink withIcon={false} className="font-bold text-ink" />, {site.hours.toLowerCase()}.
           </p>
         </div>
         <div className="grid gap-3">

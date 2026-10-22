@@ -8,9 +8,9 @@ export function Pricing() {
     <section id="prices" className="py-16 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHead
-          eyebrow="Что входит"
-          title="Одна запись — всё включено"
-          lead="Экзамен, проверка экспертом и разбор ошибок — в одной записи, без пакетов и доплат."
+          eyebrow="Стоимость"
+          title="Одна запись, и всё включено"
+          lead="В цену уже входят сам экзамен, проверка работы экспертом и разбор ошибок. Ничего доплачивать не нужно."
         />
 
         <Reveal className="mt-10">
@@ -19,10 +19,11 @@ export function Pricing() {
             <div className="relative flex flex-col justify-center bg-ink p-8 text-white sm:p-10">
               <div className="bg-grid pointer-events-none absolute inset-0 opacity-[0.08]" aria-hidden />
               <div className="relative">
-                <p className="eyebrow text-marker">Запись открыта</p>
-                <p className="mt-3 font-display text-3xl leading-[1.1] font-bold text-balance sm:text-4xl">
-                  Выберите предмет и&nbsp;дату — остальное за&nbsp;нами
+                <p className="eyebrow text-marker">{pricing.unit}</p>
+                <p className="mt-3 font-mono text-6xl leading-none font-bold sm:text-7xl">
+                  {pricing.price.toLocaleString("ru-RU")}&nbsp;₽
                 </p>
+                <p className="mt-4 text-white/75">Выберите предмет и&nbsp;дату. Остальное за&nbsp;нами.</p>
                 <CtaButton
                   source="prices"
                   variant="marker"
