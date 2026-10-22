@@ -24,10 +24,9 @@ export function Countdown() {
         <SectionHead
           dark
           eyebrow="Пока есть время"
-          title={<>Экзамен ближе, чем кажется</>}
+          title="Экзамен ближе, чем кажется"
           lead="Первый раз увидеть бланк и услышать «время пошло» можно у нас. Или в день, когда результат идёт в аттестат."
         />
-
 
         <div className="mt-10 grid gap-5 sm:mt-12 lg:grid-cols-2">
           <Reveal>
@@ -37,7 +36,7 @@ export function Countdown() {
                 {before.map((t) => (
                   <li key={t} className="flex gap-3 text-white/70">
                     <svg viewBox="0 0 24 24" className="mt-1 size-4 shrink-0 text-check" aria-hidden>
-                      <path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
+                      <path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
                     </svg>
                     {t}
                   </li>
@@ -52,8 +51,8 @@ export function Countdown() {
               <ul className="mt-5 grid gap-3.5">
                 {after.map((t) => (
                   <li key={t} className="flex gap-3">
-                    <svg viewBox="0 0 24 24" className="mt-1 size-4 shrink-0 text-marker" aria-hidden>
-                      <path d="M4 13 L10 18 L20 5" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <svg viewBox="0 0 24 24" className="mt-0.5 size-5 shrink-0 text-marker" aria-hidden>
+                      <path d="M4 13 L10 18 L20 5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     {t}
                   </li>
@@ -64,11 +63,11 @@ export function Countdown() {
         </div>
 
         <Reveal className="mt-10">
-          <div className="flex flex-col items-start gap-4 rounded-[28px] bg-marker p-6 text-night sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div className="flex flex-col items-start gap-5 rounded-[28px] bg-marker p-6 text-night sm:flex-row sm:items-center sm:justify-between sm:p-8">
             <p className="max-w-xl font-display text-xl leading-snug font-bold sm:text-2xl">
               Пусть первый экзамен пройдёт там, где ошибка ничего не стоит
             </p>
-            <CtaButton source="countdown" variant="ink" className="w-full sm:w-auto">
+            <CtaButton source="countdown" variant="ink" className="w-full shrink-0 sm:w-auto">
               Записаться на пробник
             </CtaButton>
           </div>

@@ -1,16 +1,17 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { CircleHelp, FileText, MapPin, Menu, MessagesSquare, Wallet, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { site } from "@/content/site";
 import { CtaButton, PhoneLink } from "../ui/CtaButton";
+import NavigationMenuWithActiveItem, { type NavItem } from "../ui/navigation-menu-05";
 
-const nav = [
-  { href: "#why", label: "Зачем пробник" },
-  { href: "#result", label: "Что получите" },
-  { href: "#prices", label: "Стоимость" },
-  { href: "#faq", label: "Вопросы" },
-  { href: "#contacts", label: "Контакты" },
+const nav: NavItem[] = [
+  { href: "#why", title: "Зачем пробник", icon: CircleHelp },
+  { href: "#result", title: "Что получите", icon: FileText },
+  { href: "#prices", title: "Стоимость", icon: Wallet },
+  { href: "#faq", title: "Вопросы", icon: MessagesSquare },
+  { href: "#contacts", title: "Контакты", icon: MapPin },
 ];
 
 // Подсвечиваем пункт меню того блока, который сейчас перед глазами
@@ -76,25 +77,12 @@ export function Header() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled || open ? "border-b border-grid bg-paper/95" : "bg-transparent"
+        open ? "border-b border-grid bg-paper" : scrolled ? "border-b border-grid bg-paper/95" : "bg-transparent"
       }`}
     >
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo />
-        <nav className="hidden items-center gap-1 text-[15px] font-medium lg:flex" aria-label="Основное меню">
-          {nav.map((n) => (
-            <a
-              key={n.href}
-              href={n.href}
-              aria-current={active === n.href ? "true" : undefined}
-              className={`rounded-full px-3 py-1.5 whitespace-nowrap transition ${
-                active === n.href ? "bg-ink-soft font-semibold text-ink" : "text-muted hover:text-ink"
-              }`}
-            >
-              {n.label}
-            </a>
-          ))}
-        </nav>
+        <NavigationMenuWithActiveItem items={nav} active={active} className="hidden lg:flex" />
         <div className="flex items-center gap-3">
           <span className="hidden md:block lg:hidden xl:block">
             <PhoneLink className="font-display text-sm font-bold" />
@@ -121,9 +109,17 @@ export function Header() {
               key={n.href}
               href={n.href}
               onClick={() => setOpen(false)}
-              className={`block border-b border-grid py-3.5 font-display font-bold ${active === n.href ? "text-ink" : ""}`}
+              aria-current={active === n.href ? "true" : undefined}
+              className={`flex items-center gap-3 border-b border-grid py-3.5 font-display font-bold ${active === n.href ? "text-ink" : ""}`}
             >
-              {n.label}
+              <span
+                className={`grid size-9 shrink-0 place-items-center rounded-xl ${
+                  active === n.href ? "bg-check text-white" : "bg-ink-soft text-ink"
+                }`}
+              >
+                <n.icon size={18} />
+              </span>
+              {n.title}
             </a>
           ))}
           <PhoneLink className="mt-5 font-display text-lg font-bold text-ink" />

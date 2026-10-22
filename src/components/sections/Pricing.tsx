@@ -15,9 +15,9 @@ export function Pricing() {
 
         <Reveal className="mt-10">
           <div className="grid overflow-hidden rounded-[32px] bg-white shadow-[var(--shadow-card)] lg:grid-cols-[0.85fr_1.15fr]">
-            {/* запись — главное действие блока */}
+            {/* цена и запись — главное действие блока */}
             <div className="relative flex flex-col justify-center bg-ink p-8 text-white sm:p-10">
-              <div className="bg-grid pointer-events-none absolute inset-0 opacity-[0.08]" aria-hidden />
+              <div className="bg-grid absolute inset-0 opacity-[0.08]" aria-hidden />
               <div className="relative">
                 <p className="eyebrow text-marker">{pricing.unit}</p>
                 <p className="mt-3 font-mono text-6xl leading-none font-bold sm:text-7xl">
@@ -39,18 +39,18 @@ export function Pricing() {
 
             {/* состав услуги */}
             <div className="p-8 sm:p-10">
-              <p className="font-display text-lg font-bold">В пробник входит</p>
-              <ul className="mt-6 grid gap-3.5 sm:grid-cols-2">
+              <h3 className="font-display text-xl font-bold">В пробник входит</h3>
+              <ul className="mt-6 grid gap-4 sm:grid-cols-2">
                 {pricing.features.map((f) => (
-                  <li key={f} className="flex gap-3">
-                    <Check size={20} className="mt-0.5 shrink-0 text-check" strokeWidth={3} />
-                    <span className="text-muted">{f}</span>
+                  <li key={f} className="flex items-start gap-3">
+                    <Check size={20} strokeWidth={3} className="mt-0.5 shrink-0 text-check" />
+                    <span>{f}</span>
                   </li>
                 ))}
               </ul>
-              <p className="mt-7 border-t border-grid pt-5 text-sm text-muted">{pricing.note}</p>
-              <p className="mt-2 text-sm text-muted">
-                {site.metroWalk} от м. {site.metroName}
+              <p className="mt-8 border-t border-grid pt-6 text-sm text-muted">{pricing.note}</p>
+              <p className="mt-1 text-sm text-muted">
+                {site.landmark}, {site.metroWalk} от м. {site.metroName}
               </p>
             </div>
           </div>

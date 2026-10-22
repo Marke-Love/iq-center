@@ -171,7 +171,6 @@ export function ExamDeck() {
 
   return (
     <div ref={rootRef} className="relative mx-auto w-full max-w-[460px]">
-
       {/* веер: все бланки в одной ячейке грида, слои задаются трансформом */}
       <div className="relative grid">
         {examDeck.map((blank, i) => {
@@ -198,8 +197,6 @@ export function ExamDeck() {
           <p className="mt-0.5 text-sm font-semibold">Разберём каждую ошибку</p>
         </div>
       </div>
-
-
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # IQ Center — лендинг пробных ЕГЭ/ОГЭ
 
-Next.js 15 + React + Tailwind CSS 4 + Framer Motion. Сайт собирается в статические файлы (`out/`).
+Next.js 15 + React + Tailwind CSS 4. Сайт собирается в статические файлы (`out/`).
 
 ## Команды
 

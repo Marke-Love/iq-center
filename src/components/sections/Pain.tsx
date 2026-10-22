@@ -36,12 +36,12 @@ export function Pain() {
           {items.map((it, i) => (
             <Reveal key={it.problem} delay={i * 0.06}>
               <article className="group h-full rounded-[28px] bg-white p-6 shadow-[var(--shadow-card)] transition hover:-translate-y-1 sm:p-8">
-                <p className="flex gap-3 font-display text-lg leading-snug font-bold sm:text-xl">
+                <h3 className="flex gap-3 font-display text-lg leading-snug font-bold sm:text-xl">
                   <svg viewBox="0 0 24 24" className="mt-1 size-5 shrink-0 text-check" aria-hidden>
                     <path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" />
                   </svg>
                   <span>{it.problem}</span>
-                </p>
+                </h3>
                 <p className="mt-4 flex gap-3 text-muted">
                   <svg viewBox="0 0 24 24" className="mt-0.5 size-5 shrink-0 text-ink" aria-hidden>
                     <path d="M4 13 L10 18 L20 5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />

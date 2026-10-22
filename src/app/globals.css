@@ -141,7 +141,6 @@ body {
   }
 }
 
-
 /* Зачёркнутое красной ручкой слово: «а не онлайн» */
 .pen-strike {
   position: relative;
@@ -158,4 +157,18 @@ body {
   border-radius: 3px;
   background: var(--color-check);
   transform: rotate(-7deg);
+}
+
+/* Плавающие теги предметов на первом экране: медленно покачиваются вокруг бланка */
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translate(6px, -14px) rotate(calc(var(--tilt, 0deg) + 3deg));
+  }
+}
+.float-tag {
+  animation: float 7s ease-in-out infinite;
 }
