@@ -7,3 +7,7 @@ next-env.d.ts
 public/config.php
 .claudeleads-data/
 public/data/
+probnik-ege-site.zip
+
+# настройки FTP-подключения
+.vscode/sftp.json
