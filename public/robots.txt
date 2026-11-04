@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /thanks/
 Disallow: /send.php
+Disallow: /admin/
 
-Sitemap: https://example.ru/sitemap.xml
+Sitemap: https://probnik-ege.ru/sitemap.xml

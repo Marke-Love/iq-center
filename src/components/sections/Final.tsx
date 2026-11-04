@@ -3,6 +3,7 @@
 import { Clock, FileText, MapPin, MessageCircle, Phone, Send, Users } from "lucide-react";
 import { site } from "@/content/site";
 import { goal } from "@/lib/metrika";
+import { openCookieSettings } from "../ui/CookieConsent";
 import { CtaButton, PhoneLink } from "../ui/CtaButton";
 import { LeadForm } from "../ui/LeadForm";
 import { MetroIcon } from "../ui/MetroIcon";
@@ -169,6 +170,9 @@ export function Footer() {
             <a href="/privacy/" className="mt-2 underline underline-offset-2 hover:text-white">
               Политика обработки персональных данных
             </a>
+            <button type="button" onClick={openCookieSettings} className="w-fit underline underline-offset-2 hover:text-white">
+              Настройки cookie
+            </button>
           </div>
           <p className="text-white/50 md:text-right">
             Пробные экзамены являются платной образовательной услугой. {site.name} не является пунктом проведения экзаменов и

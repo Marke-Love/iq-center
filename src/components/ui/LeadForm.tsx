@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, Loader2 } from "lucide-react";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { site, subjects, type Exam } from "@/content/site";
 import { goal } from "@/lib/metrika";
 import { readUtm } from "@/lib/utm";
@@ -29,6 +29,11 @@ export function LeadForm({ defaultSubject, defaultExam, source, dark }: Props) {
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState("");
+  // время открытия формы: бот заполняет её мгновенно, и сервер такие заявки отбрасывает
+  const openedAt = useRef(0);
+  useEffect(() => {
+    openedAt.current = Date.now();
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -56,6 +61,7 @@ export function LeadForm({ defaultSubject, defaultExam, source, dark }: Props) {
           exam,
           subject: form.get("subject"),
           website: form.get("website"),
+          t: Date.now() - openedAt.current,
           source,
           page: window.location.href,
           utm: readUtm(),
@@ -100,7 +106,7 @@ export function LeadForm({ defaultSubject, defaultExam, source, dark }: Props) {
 
       <div>
         <label htmlFor={`${id}-name`} className={label}>Имя</label>
-        <input id={`${id}-name`} name="name" autoComplete="name" placeholder="Как к вам обращаться" className={field} maxLength={80} />
+        <input id={`${id}-name`} name="name" autoComplete="name" placeholder="Как к вам обращаться" className={`${field} ym-disable-keys`} maxLength={80} />
       </div>
       <div>
         <label htmlFor={`${id}-phone`} className={label}>Телефон</label>
@@ -114,7 +120,7 @@ export function LeadForm({ defaultSubject, defaultExam, source, dark }: Props) {
           placeholder="+7 (___) ___-__-__"
           value={phone}
           onChange={(e) => setPhone(e.target.value ? formatPhone(e.target.value) : "")}
-          className={field}
+          className={`${field} ym-disable-keys`}
         />
       </div>
       <div>
@@ -124,7 +130,7 @@ export function LeadForm({ defaultSubject, defaultExam, source, dark }: Props) {
           name="subject"
           key={exam}
           defaultValue={subjects[exam].some((s) => s.name === defaultSubject) ? defaultSubject : ""}
-          className={`${field} appearance-none`}
+          className={`${field} ym-disable-keys appearance-none`}
         >
           <option value="">Пока не решили</option>
           {subjects[exam].map((s) => (

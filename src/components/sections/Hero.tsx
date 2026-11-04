@@ -21,8 +21,9 @@ const tags = [
 export function Hero() {
   return (
     <section id="top" className="px-2 pt-22 pb-6 sm:px-5 sm:pt-24 sm:pb-10">
-      {/* первый экран — отдельная «картина» в рамке: синий лист в клетку со скруглёнными углами */}
-      <div className="relative mx-auto max-w-[1360px] overflow-hidden rounded-[32px] bg-ink text-white shadow-[0_30px_60px_-30px_rgba(28,28,168,0.7)] sm:rounded-[44px]">
+      {/* первый экран — отдельная «картина» в рамке: синий лист в клетку со скруглёнными углами.
+          isolate держит плавающие теги внутри рамки, чтобы они не перекрывали шапку и плашку cookie */}
+      <div className="relative isolate mx-auto max-w-[1360px] overflow-hidden rounded-[32px] bg-ink text-white shadow-[0_30px_60px_-30px_rgba(28,28,168,0.7)] sm:rounded-[44px]">
         <div className="bg-grid absolute inset-0 opacity-[0.09]" aria-hidden />
 
         <div className="relative px-4 pt-6 pb-10 sm:px-10 sm:pt-10 sm:pb-14 lg:px-14 lg:pt-12">

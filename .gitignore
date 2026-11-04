@@ -5,4 +5,5 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 public/config.php
-.claude
+.claudeleads-data/
+public/data/
