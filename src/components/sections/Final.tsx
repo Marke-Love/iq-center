@@ -62,7 +62,7 @@ export function CtaForm() {
         <div className="relative px-3 pt-8 pb-3 sm:px-8 sm:pb-8 lg:py-12 lg:pr-12 lg:pl-4">
           <div className="rounded-[28px] bg-white p-6 text-text shadow-[0_30px_60px_-30px_rgba(16,16,46,0.6)] sm:rounded-[32px] sm:p-8">
             <p className="font-display text-2xl font-bold">Записаться на пробник</p>
-            <p className="mt-1.5 text-sm text-muted">Перезвоним в течение 15 минут в рабочее время.</p>
+            <p className="mt-1.5 text-sm text-muted">Перезвоним в ближайшее время.</p>
             <div className="mt-6">
               <LeadForm source="final" />
             </div>
@@ -164,10 +164,23 @@ export function Footer() {
             <p>
               ИНН {legal.inn} · ОГРН{legal.ogrn.length > 13 ? "ИП" : ""} {legal.ogrn}
             </p>
+            <p>Адрес регистрации ИП: {legal.registration}</p>
             <p>
-              {site.city}, {site.address}
+              Адрес оказания услуг: {site.city}, {site.address}
             </p>
-            <a href="/privacy/" className="mt-2 underline underline-offset-2 hover:text-white">
+            <p>
+              E-mail:{" "}
+              <a href={`mailto:${site.email}`} className="underline underline-offset-2 hover:text-white">
+                {site.email}
+              </a>
+            </p>
+            <a href="/oferta/" className="mt-2 w-fit underline underline-offset-2 hover:text-white">
+              Договор-оферта
+            </a>
+            <a href="/oferta/#vozvrat" className="w-fit underline underline-offset-2 hover:text-white">
+              Условия отказа и возврата
+            </a>
+            <a href="/privacy/" className="w-fit underline underline-offset-2 hover:text-white">
               Политика обработки персональных данных
             </a>
             <button type="button" onClick={openCookieSettings} className="w-fit underline underline-offset-2 hover:text-white">
@@ -175,9 +188,9 @@ export function Footer() {
             </button>
           </div>
           <p className="text-white/50 md:text-right">
-            Пробные экзамены являются платной образовательной услугой. {site.name} не является пунктом проведения экзаменов и
+            Пробные экзамены являются платной образовательной услугой. Образовательный центр не является пунктом проведения экзаменов и
             не связан с ФИПИ и Рособрнадзором. Результат пробника не влияет на официальные результаты ЕГЭ и ОГЭ.
-            <br />© {new Date().getFullYear()} {site.name}
+            <br />© {new Date().getFullYear()} Образовательный центр
           </p>
         </div>
       </div>

@@ -200,6 +200,9 @@ function page_start(string $title): void { ?>
   .top h1 { margin:0; font-size:20px; }
   .card { background:#fff; border:1px solid var(--grid); border-radius:16px; padding:20px; margin-bottom:16px; }
   .filters { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px 16px; align-items:end; }
+  .range { display:flex; align-items:center; gap:8px; }
+  .range input { flex:1; min-width:0; }
+  @media (min-width:640px) { .period { grid-column:span 2; } }
   label { display:block; font-weight:600; font-size:13px; margin-bottom:6px; }
   input, select, textarea { width:100%; padding:9px 11px; border:1px solid var(--grid); border-radius:10px; font:inherit; background:#fff; color:inherit; }
   input:focus, select:focus, textarea:focus { outline:2px solid var(--ink); outline-offset:-1px; }
@@ -211,7 +214,7 @@ function page_start(string $title): void { ?>
   .summary { display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:12px; }
   .summary b { font-size:18px; }
   .table-wrap { overflow-x:auto; }
-  table { width:100%; border-collapse:collapse; min-width:980px; }
+  table { width:100%; border-collapse:collapse; min-width:900px; }
   th { text-align:left; font-size:13px; color:var(--muted); font-weight:600; padding:10px; background:var(--paper); }
   td { padding:10px; border-top:1px solid var(--grid); vertical-align:top; }
   tr.is-new td:first-child { box-shadow: inset 3px 0 0 var(--check); }
@@ -323,7 +326,6 @@ if (isset($_GET['id'])) {
         page_end();
         exit;
     }
-    $utm = json_decode($r['utm'], true) ?: [];
     $back = './?id=' . (int) $r['id']; ?>
   <p><a href="./">← Все заявки</a></p>
   <div class="card">
@@ -336,7 +338,6 @@ if (isset($_GET['id'])) {
       <dt>Предмет</dt><dd><?= h($r['subject'] ?: 'не выбран') ?></dd>
       <dt>Откуда нажали</dt><dd><?= h(IQ_SOURCES[$r['source']] ?? ($r['source'] ?: '—')) ?></dd>
       <dt>Страница</dt><dd class="muted"><?= h($r['page'] ?: '—') ?></dd>
-      <dt>Рекламные метки</dt><dd class="muted"><?php if ($utm): foreach ($utm as $k => $v): ?><?= h($k) ?>: <?= h($v) ?><br><?php endforeach; else: ?>—<?php endif; ?></dd>
     </dl>
     <form method="post">
       <input type="hidden" name="csrf" value="<?= h(csrf()) ?>">
@@ -418,8 +419,14 @@ $header(); ?>
         <?php foreach (IQ_SOURCES as $k => $label): ?><option value="<?= h($k) ?>" <?= $f['source'] === $k ? 'selected' : '' ?>><?= h($label) ?></option><?php endforeach; ?>
       </select>
     </div>
-    <div><label for="from">С даты</label><input id="from" name="from" type="date" value="<?= h($f['from']) ?>"></div>
-    <div><label for="to">По дату</label><input id="to" name="to" type="date" value="<?= h($f['to']) ?>"></div>
+    <div class="period">
+      <label for="from">Период</label>
+      <div class="range">
+        <input id="from" name="from" type="date" value="<?= h($f['from']) ?>" aria-label="С даты">
+        <span class="muted">—</span>
+        <input id="to" name="to" type="date" value="<?= h($f['to']) ?>" aria-label="По дату">
+      </div>
+    </div>
     <div class="btns" style="grid-column:1 / -1">
       <button class="btn btn-primary" type="submit">Фильтровать</button>
       <a class="btn btn-light" href="./">Сбросить</a>
@@ -436,11 +443,9 @@ $header(); ?>
     <?php else: ?>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Дата</th><th>Имя</th><th>Телефон</th><th>Экзамен</th><th>Предмет</th><th>Откуда</th><th>Метка</th><th>Статус</th><th></th><th></th></tr></thead>
+        <thead><tr><th>Дата</th><th>Имя</th><th>Телефон</th><th>Экзамен</th><th>Предмет</th><th>Откуда</th><th>Статус</th><th></th><th></th></tr></thead>
         <tbody>
-        <?php foreach ($rows as $r):
-            $utm = json_decode($r['utm'], true) ?: [];
-            $mark = $utm['utm_source'] ?? ($utm['yclid'] ?? null ? 'yandex (yclid)' : ''); ?>
+        <?php foreach ($rows as $r): ?>
           <tr class="<?= $r['status'] === 'new' ? 'is-new' : '' ?>">
             <td><?= h(iq_time($r['created_at'], 'd.m.Y')) ?><br><span class="muted"><?= h(iq_time($r['created_at'], 'H:i')) ?></span></td>
             <td><?= h($r['name'] ?: '—') ?><?php if ($r['comment'] !== ''): ?><br><span class="muted" title="<?= h($r['comment']) ?>">💬 <?= h(mb_strimwidth($r['comment'], 0, 40, '…')) ?></span><?php endif; ?></td>
@@ -448,7 +453,6 @@ $header(); ?>
             <td><?= h($r['exam'] ?: '—') ?></td>
             <td><?= h($r['subject'] ?: '—') ?></td>
             <td><?= h(IQ_SOURCES[$r['source']] ?? ($r['source'] ?: '—')) ?></td>
-            <td class="muted"><?= h($mark ?: '—') ?><?php if (!empty($utm['utm_campaign'])): ?><br><?= h(mb_strimwidth($utm['utm_campaign'], 0, 24, '…')) ?><?php endif; ?></td>
             <td><?php status_form($r, $back); ?></td>
             <td><a href="./?id=<?= (int) $r['id'] ?>">Открыть</a></td>
             <td><?php delete_form((int) $r['id'], $back); ?></td>

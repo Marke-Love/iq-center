@@ -13,7 +13,7 @@ export default function Thanks() {
         </div>
         <h1 className="mt-8 font-display text-3xl leading-tight font-bold">Спасибо! Скоро перезвоним</h1>
         <p className="mt-4 text-lg text-muted">
-          Администратор свяжется с вами в течение 15 минут в рабочее время ({site.hours.toLowerCase()}) и подберёт дату пробника.
+          Администратор свяжется с вами в ближайшее время и подберёт дату пробника. Мы на связи {site.hours.toLowerCase()}.
         </p>
         <p className="mt-6 text-muted">
           Срочный вопрос? <a href={site.phoneHref} className="font-bold text-ink">{site.phone}</a>
