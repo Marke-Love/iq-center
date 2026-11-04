@@ -5,7 +5,7 @@ export const site = {
   tagline: "Пробные ЕГЭ и ОГЭ",
   phone: "+7 906 255-68-86",
   phoneHref: "tel:+79062556886",
-  telegram: "https://t.me/", // TODO: ссылка на Telegram
+  telegram: "https://t.me/+79062556886", // чат по номеру телефона
   max: "https://max.ru/", // TODO: ссылка на профиль центра в MAX
   email: "markelovaov@yandex.ru",
   city: "Санкт-Петербург",
