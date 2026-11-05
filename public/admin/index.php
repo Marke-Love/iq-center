@@ -1,5 +1,6 @@
 <?php
-// Админка заявок: вход по паролю из config.php, фильтры, статусы, комментарии, выгрузка в CSV.
+// Админка заявок: вход по паролю из config.php, фильтры, статусы, комментарии, выгрузка в CSV,
+// настройки уведомлений (почта через хостинг или SMTP, Telegram) с проверкой отправки.
 
 define('IQ_ROOT', dirname(__DIR__));
 require IQ_ROOT . '/leads-lib.php';
@@ -82,9 +83,109 @@ if ($authed) {
     $_SESSION['seen'] = time();
 }
 
+// ---------- Настройки отправки: сохранение и проверка ----------
+
+$settingsErrors = [];
+$settingsInput = null;
+if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && in_array($action, ['settings_save', 'test_email', 'test_tg'], true)) {
+    check_csrf();
+    if ($action === 'settings_save') {
+        $in = function (string $k, int $max = 200): string {
+            return mb_substr(trim((string) ($_POST[$k] ?? '')), 0, $max);
+        };
+        $v = [
+            'notify_email' => $in('notify_email', 500),
+            'mail_method'  => in_array($_POST['mail_method'] ?? '', ['off', 'mail', 'smtp'], true) ? $_POST['mail_method'] : 'off',
+            'from_email'   => $in('from_email'),
+            'from_name'    => str_replace(["\r", "\n"], '', $in('from_name', 80)),
+            'smtp_host'    => $in('smtp_host'),
+            'smtp_port'    => (string) (int) ($_POST['smtp_port'] ?? 0),
+            'smtp_secure'  => in_array($_POST['smtp_secure'] ?? '', ['ssl', 'tls', 'none'], true) ? $_POST['smtp_secure'] : 'ssl',
+            'smtp_user'    => $in('smtp_user'),
+            'tg_enabled'   => ($_POST['tg_enabled'] ?? '') === '1' ? '1' : '0',
+            'tg_chat'      => $in('tg_chat', 64),
+        ];
+        // Пароль и токен на страницу не выводятся: пустое поле — оставить как было
+        $pass = (string) ($_POST['smtp_pass'] ?? '');
+        $token = trim((string) ($_POST['tg_token'] ?? ''));
+        if ($pass !== '') {
+            $v['smtp_pass'] = str_replace(' ', '', $pass); // Яндекс показывает пароль приложения с пробелами
+        }
+        if (!empty($_POST['smtp_pass_clear'])) {
+            $v['smtp_pass'] = '';
+        }
+        if ($token !== '') {
+            $v['tg_token'] = $token;
+        }
+        if (!empty($_POST['tg_token_clear'])) {
+            $v['tg_token'] = '';
+        }
+
+        $raw = preg_split('/[\s,;]+/', $v['notify_email'], -1, PREG_SPLIT_NO_EMPTY);
+        if (count($raw) !== count(iq_email_list($v['notify_email']))) {
+            $settingsErrors[] = 'Проверьте адрес получателя: можно указать один или несколько адресов через запятую.';
+        }
+        if ($v['mail_method'] !== 'off' && !$raw) {
+            $settingsErrors[] = 'Укажите адрес, на который приходят заявки, или выберите «Не отправлять письма».';
+        }
+        if ($v['from_email'] !== '' && !filter_var($v['from_email'], FILTER_VALIDATE_EMAIL)) {
+            $settingsErrors[] = 'Email отправителя указан с ошибкой.';
+        }
+        if ($v['mail_method'] === 'smtp') {
+            if (!preg_match('/^[a-z0-9.-]+$/i', $v['smtp_host'])) {
+                $settingsErrors[] = 'Укажите SMTP-хост, например smtp.yandex.ru.';
+            }
+            if ((int) $v['smtp_port'] < 1 || (int) $v['smtp_port'] > 65535) {
+                $settingsErrors[] = 'Укажите порт SMTP: 465 для SSL или 587 для STARTTLS.';
+            }
+        }
+        if ($token !== '' && !preg_match('/^\d+:[A-Za-z0-9_-]{30,}$/', $token)) {
+            $settingsErrors[] = 'Токен бота выглядит неверно. Его выдаёт @BotFather, вид: 123456789:AA…';
+        }
+        if ($v['tg_chat'] !== '' && !preg_match('/^(-?\d{1,20}|@[A-Za-z0-9_]{5,})$/', $v['tg_chat'])) {
+            $settingsErrors[] = 'Chat ID — это число (например 123456789, у групп начинается с минуса).';
+        }
+        if ($v['tg_enabled'] === '1') {
+            $current = iq_settings();
+            if ($v['tg_chat'] === '' || (($v['tg_token'] ?? $current['tg_token']) === '')) {
+                $settingsErrors[] = 'Для отправки в Telegram нужны токен бота и chat ID.';
+            }
+        }
+
+        if ($settingsErrors) {
+            $settingsInput = $v; // покажем форму с введёнными значениями, без редиректа
+            $_GET['view'] = 'settings';
+        } else {
+            iq_settings_save($v);
+            $_SESSION['flash'] = ['ok' => true, 'msg' => 'Настройки сохранены.'];
+            redirect('./?view=settings');
+        }
+    } else {
+        $s = iq_settings();
+        try {
+            if ($action === 'test_email') {
+                if ($s['mail_method'] === 'off') {
+                    throw new RuntimeException('Отправка писем выключена — выберите способ и сохраните настройки.');
+                }
+                iq_send_mail($s, 'Проверка отправки заявок', "Это тестовое письмо из админки сайта.\nЕсли вы его видите — заявки будут приходить на эту почту.\n\nВремя (МСК): " . iq_time(gmdate('Y-m-d H:i:s')));
+                iq_notify_status('email', true);
+                $_SESSION['flash'] = ['ok' => true, 'msg' => 'Тестовое письмо отправлено на ' . implode(', ', iq_email_list($s['notify_email'])) . '. Если его нет во «Входящих», проверьте «Спам».'];
+            } else {
+                iq_tg_send($s, "✅ <b>Проверка связи</b>\nЗаявки с сайта будут приходить сюда.");
+                iq_notify_status('tg', true);
+                $_SESSION['flash'] = ['ok' => true, 'msg' => 'Сообщение отправлено в Telegram.'];
+            }
+        } catch (Throwable $e) {
+            iq_notify_status($action === 'test_email' ? 'email' : 'tg', false, $e->getMessage());
+            $_SESSION['flash'] = ['ok' => false, 'msg' => $e->getMessage()];
+        }
+        redirect('./?view=settings');
+    }
+}
+
 // ---------- Действия ----------
 
-if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && $action !== 'login') {
+if ($authed && $_SERVER['REQUEST_METHOD'] === 'POST' && $action !== 'login' && !$settingsErrors) {
     check_csrf();
     $id = (int) ($_POST['id'] ?? 0);
     $back = (string) ($_POST['back'] ?? './');
@@ -228,6 +329,18 @@ function page_start(string $title): void { ?>
   .pager { display:flex; gap:6px; flex-wrap:wrap; margin-top:16px; }
   .pager a, .pager span { padding:6px 11px; border-radius:8px; background:#fff; border:1px solid var(--grid); text-decoration:none; }
   .pager span { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .settings h2 { font-size:18px; margin:24px 0 10px; } .settings h2:first-of-type { margin-top:0; }
+  .settings fieldset { border:0; padding:0; margin:0; min-width:0; }
+  .settings .row { display:grid; grid-template-columns:1fr 1fr; gap:14px 20px; }
+  .settings .full { grid-column:1 / -1; }
+  .settings [hidden] { display:none !important; }
+  .hint { color:var(--muted); font-size:13px; margin:6px 0 12px; }
+  .check { display:flex; align-items:center; gap:8px; font-weight:400; margin-top:8px; }
+  .check input { width:auto; }
+  .note { padding:12px 14px; border-radius:12px; margin:0 0 12px; font-size:14px; word-break:break-word; }
+  .note.ok { background:#dcfce7; color:#14532d; } .note.bad { background:#fff0eb; color:#9a3412; }
+  code { background:var(--paper); padding:1px 5px; border-radius:6px; }
+  @media (max-width:640px) { .settings .row { grid-template-columns:1fr; } .top { flex-wrap:wrap; } }
   @media (max-width:640px) { .detail { grid-template-columns:1fr; } .detail dt { margin-top:8px; } }
 </style>
 </head>
@@ -306,12 +419,173 @@ try {
     exit;
 }
 
-$header = function () { ?>
+$header = function (string $active = 'leads') { ?>
   <div class="top">
     <h1><a href="./" style="text-decoration:none;color:inherit">Заявки IQ Center</a></h1>
-    <a class="btn btn-light" href="./?action=logout">Выйти</a>
+    <nav class="btns">
+      <a class="btn <?= $active === 'leads' ? 'btn-primary' : 'btn-light' ?>" href="./">Заявки</a>
+      <a class="btn <?= $active === 'settings' ? 'btn-primary' : 'btn-light' ?>" href="./?view=settings">Настройки отправки</a>
+      <a class="btn btn-light" href="./?action=logout">Выйти</a>
+    </nav>
   </div>
 <?php };
+
+// ---------- Настройки отправки ----------
+
+if (($_GET['view'] ?? '') === 'settings') {
+    $s = iq_settings();
+    $form = $settingsInput ? array_merge($s, $settingsInput) : $s;
+    $flash = $_SESSION['flash'] ?? null;
+    unset($_SESSION['flash']);
+    $statusLine = function (string $raw, string $what) {
+        $st = json_decode($raw, true);
+        if (!is_array($st)) {
+            return '<p class="muted">' . h($what) . ': ещё не отправлялось.</p>';
+        }
+        $when = iq_time($st['at'], 'd.m.Y H:i');
+        return $st['ok']
+            ? '<p class="note ok">' . h($what) . ': последняя отправка ' . h($when) . ' — успешно.</p>'
+            : '<p class="note bad">' . h($what) . ': ошибка ' . h($when) . ' — ' . h(preg_replace('/^Telegram: /', '', $st['error'])) . '</p>';
+    };
+    page_start('Настройки отправки');
+    $header('settings'); ?>
+  <?php if ($flash): ?><div class="note <?= $flash['ok'] ? 'ok' : 'bad' ?>" role="status"><?= h($flash['msg']) ?></div><?php endif; ?>
+  <?php if ($settingsErrors): ?><div class="note bad" role="alert"><b>Настройки не сохранены:</b><br><?= implode('<br>', array_map('h', $settingsErrors)) ?></div><?php endif; ?>
+
+  <form method="post" class="card settings">
+    <input type="hidden" name="csrf" value="<?= h(csrf()) ?>">
+    <input type="hidden" name="action" value="settings_save">
+
+    <h2>Получатель уведомлений</h2>
+    <div class="row">
+      <div class="full">
+        <label for="notify_email">Email, на который приходят заявки</label>
+        <input id="notify_email" name="notify_email" value="<?= h($form['notify_email']) ?>" placeholder="markelovaov@yandex.ru">
+        <p class="hint">Можно несколько адресов через запятую.</p>
+      </div>
+    </div>
+
+    <h2>Способ отправки писем</h2>
+    <div class="row">
+      <div class="full">
+        <label for="mail_method">Как отправлять письма о заявках</label>
+        <select id="mail_method" name="mail_method">
+          <option value="smtp" <?= $form['mail_method'] === 'smtp' ? 'selected' : '' ?>>Через почтовый ящик по SMTP (Яндекс, Mail.ru и др.) — надёжнее</option>
+          <option value="mail" <?= $form['mail_method'] === 'mail' ? 'selected' : '' ?>>Обычная отправка с хостинга (без логина и пароля)</option>
+          <option value="off" <?= $form['mail_method'] === 'off' ? 'selected' : '' ?>>Не отправлять письма</option>
+        </select>
+        <p class="hint" data-show="mail">Письмо отправляет сам хостинг. Просто, но такие письма чаще попадают в «Спам». В «Email отправителя» лучше указать ящик на домене сайта, созданный в панели reg.ru.</p>
+        <p class="hint" data-show="smtp">Письмо уходит из вашего почтового ящика, как будто вы отправили его сами, — почти никогда не попадает в «Спам». Заполните блок SMTP ниже.</p>
+      </div>
+      <div data-show="mail smtp">
+        <label for="from_email">Email отправителя (From)</label>
+        <input id="from_email" name="from_email" value="<?= h($form['from_email']) ?>" placeholder="Для SMTP — как логин">
+      </div>
+      <div data-show="mail smtp">
+        <label for="from_name">Имя отправителя</label>
+        <input id="from_name" name="from_name" value="<?= h($form['from_name']) ?>" maxlength="80">
+      </div>
+    </div>
+
+    <fieldset data-show="smtp">
+      <h2>SMTP-сервер</h2>
+      <p class="hint">Для Яндекс Почты: хост <code>smtp.yandex.ru</code>, SSL, порт 465. Логин — ваш адрес на Яндексе. Вместо обычного пароля нужен <b>пароль приложения</b>: id.yandex.ru → Безопасность → Пароли приложений → «Почта». В настройках почты Яндекса включите «Все настройки → Почтовые программы → разрешить доступ с сервера imap.yandex.ru». Email отправителя должен совпадать с логином или быть пустым.</p>
+      <div class="row">
+        <div>
+          <label for="smtp_host">SMTP-хост</label>
+          <input id="smtp_host" name="smtp_host" value="<?= h($form['smtp_host']) ?>">
+        </div>
+        <div>
+          <label for="smtp_port">Порт</label>
+          <input id="smtp_port" name="smtp_port" inputmode="numeric" value="<?= h($form['smtp_port']) ?>">
+        </div>
+        <div>
+          <label for="smtp_secure">Шифрование</label>
+          <select id="smtp_secure" name="smtp_secure">
+            <option value="ssl" <?= $form['smtp_secure'] === 'ssl' ? 'selected' : '' ?>>SSL (порт 465)</option>
+            <option value="tls" <?= $form['smtp_secure'] === 'tls' ? 'selected' : '' ?>>STARTTLS (порт 587)</option>
+            <option value="none" <?= $form['smtp_secure'] === 'none' ? 'selected' : '' ?>>Без шифрования (не рекомендуется)</option>
+          </select>
+        </div>
+        <div>
+          <label for="smtp_user">Логин (обычно email)</label>
+          <input id="smtp_user" name="smtp_user" value="<?= h($form['smtp_user']) ?>" autocomplete="off">
+        </div>
+        <div class="full">
+          <label for="smtp_pass">Пароль приложения</label>
+          <input id="smtp_pass" name="smtp_pass" type="password" autocomplete="new-password" placeholder="<?= $s['smtp_pass'] !== '' ? 'Сохранён — оставьте пустым, чтобы не менять' : 'Не задан' ?>">
+          <?php if ($s['smtp_pass'] !== ''): ?><label class="check"><input type="checkbox" name="smtp_pass_clear" value="1"> Удалить сохранённый пароль</label><?php endif; ?>
+        </div>
+      </div>
+    </fieldset>
+
+    <h2>Дублирование в Telegram</h2>
+    <p class="hint">Заявки будут приходить боту дополнительно к письму.
+      1) Создайте бота у <b>@BotFather</b> (команда /newbot) и скопируйте токен.
+      2) Откройте своего бота и нажмите «Запустить» (/start) — без этого бот не сможет вам писать.
+      3) Узнайте свой chat ID у бота <b>@userinfobot</b>. Для группы: добавьте в неё своего бота, chat ID группы начинается с минуса.</p>
+    <div class="row">
+      <div class="full">
+        <label for="tg_enabled">Отправлять заявки в Telegram</label>
+        <select id="tg_enabled" name="tg_enabled">
+          <option value="0" <?= $form['tg_enabled'] !== '1' ? 'selected' : '' ?>>Нет</option>
+          <option value="1" <?= $form['tg_enabled'] === '1' ? 'selected' : '' ?>>Да</option>
+        </select>
+      </div>
+      <div>
+        <label for="tg_token">Токен бота</label>
+        <input id="tg_token" name="tg_token" type="password" autocomplete="off" placeholder="<?= $s['tg_token'] !== '' ? 'Сохранён — оставьте пустым, чтобы не менять' : '123456789:AA…' ?>">
+        <?php if ($s['tg_token'] !== ''): ?><label class="check"><input type="checkbox" name="tg_token_clear" value="1"> Удалить сохранённый токен</label><?php endif; ?>
+      </div>
+      <div>
+        <label for="tg_chat">Кому отправлять (chat ID)</label>
+        <input id="tg_chat" name="tg_chat" value="<?= h($form['tg_chat']) ?>" placeholder="123456789">
+      </div>
+    </div>
+
+    <div class="btns" style="margin-top:20px"><button class="btn btn-primary" type="submit">Сохранить</button></div>
+  </form>
+
+  <div class="card settings">
+    <h2>Проверка отправки</h2>
+    <p class="hint">Отправляет проверочное сообщение с уже <b>сохранёнными</b> настройками — сначала нажмите «Сохранить».</p>
+    <?= $statusLine($s['status_email'], 'Письма') ?>
+    <form method="post" style="margin:0 0 16px">
+      <input type="hidden" name="csrf" value="<?= h(csrf()) ?>">
+      <input type="hidden" name="action" value="test_email">
+      <button class="btn btn-light" type="submit">Отправить тестовое письмо</button>
+    </form>
+    <?= $statusLine($s['status_tg'], 'Telegram') ?>
+    <form method="post" style="margin:0">
+      <input type="hidden" name="csrf" value="<?= h(csrf()) ?>">
+      <input type="hidden" name="action" value="test_tg">
+      <button class="btn btn-light" type="submit">Отправить тестовое сообщение в Telegram</button>
+    </form>
+  </div>
+
+  <script>
+    // показываем только поля выбранного способа отправки и подставляем порт под шифрование
+    (function () {
+      var method = document.getElementById('mail_method');
+      var secure = document.getElementById('smtp_secure');
+      var port = document.getElementById('smtp_port');
+      function sync() {
+        document.querySelectorAll('[data-show]').forEach(function (el) {
+          el.hidden = el.getAttribute('data-show').split(' ').indexOf(method.value) === -1;
+        });
+      }
+      method.addEventListener('change', sync);
+      secure.addEventListener('change', function () {
+        var ports = { ssl: '465', tls: '587', none: '25' };
+        if (['465', '587', '25', ''].indexOf(port.value) !== -1) port.value = ports[secure.value];
+      });
+      sync();
+    })();
+  </script>
+<?php
+    page_end();
+    exit;
+}
 
 // ---------- Карточка заявки ----------
 

@@ -1,5 +1,5 @@
 <?php
-// Приём заявок с сайта → база (смотреть в /admin/) + письмо на почту, если она указана в config.php.
+// Приём заявок с сайта → база (смотреть в /admin/) + письмо и/или Telegram по настройкам в /admin/?view=settings.
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -71,11 +71,20 @@ if (is_file($lock) && time() - filemtime($lock) < 30) {
 }
 @touch($lock);
 
+$lead = [
+    'created_at' => gmdate('Y-m-d H:i:s'),
+    'name'       => $name,
+    'phone'      => $phone,
+    'exam'       => $exam,
+    'subject'    => $subject,
+    'source'     => $source,
+];
+
 try {
     $stmt = iq_db()->prepare('INSERT INTO leads (created_at, name, phone, exam, subject, source, page, utm, search)
         VALUES (:created_at, :name, :phone, :exam, :subject, :source, :page, :utm, :search)');
     $stmt->execute([
-        ':created_at' => gmdate('Y-m-d H:i:s'),
+        ':created_at' => $lead['created_at'],
         ':name'       => $name,
         ':phone'      => $phone,
         ':exam'       => $exam,
@@ -85,36 +94,20 @@ try {
         ':utm'        => json_encode($utm, JSON_UNESCAPED_UNICODE),
         ':search'     => iq_search_text($name, $subject),
     ]);
+    $lead['id'] = (int) iq_db()->lastInsertId();
 } catch (Throwable $e) {
     error_log('iq leads: ' . $e->getMessage());
     @unlink($lock);
     reply(502, ['ok' => false, 'error' => 'storage']);
 }
 
-// Письмо — дополнительный канал: если почта не настроена или не дошла, заявка всё равно сохранена
-$config = iq_config();
-if (!empty($config['email_to'])) {
-    $phonePretty = iq_phone_pretty($phone);
-    $lines = [
-        'Имя: ' . ($name ?: '—'),
-        'Телефон: ' . $phonePretty,
-        'Экзамен: ' . ($exam ?: '—'),
-        'Предмет: ' . ($subject ?: 'не выбран'),
-        'Кнопка: ' . (IQ_SOURCES[$source] ?? ($source ?: '—')),
-        'Время: ' . iq_time(gmdate('Y-m-d H:i:s')),
-    ];
-    foreach ($utm as $k => $v) {
-        $lines[] = "$k: $v";
-    }
-    $from = $config['email_from'] ?? ('noreply@' . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
-    $subjectLine = '=?UTF-8?B?' . base64_encode('Заявка на пробник: ' . $phonePretty) . '?=';
-    $headers = implode("\r\n", [
-        'MIME-Version: 1.0',
-        'Content-Type: text/plain; charset=UTF-8',
-        'Content-Transfer-Encoding: 8bit',
-        'From: ' . $from,
-    ]);
-    @mail($config['email_to'], $subjectLine, implode("\n", $lines), $headers);
+// Посетитель сразу получает ответ «заявка принята», а письмо и Telegram отправляются уже после.
+// Уведомления — дополнительный канал: если они не дошли, заявка всё равно сохранена в /admin/.
+http_response_code(200);
+echo json_encode(['ok' => true]);
+if (function_exists('fastcgi_finish_request')) {
+    fastcgi_finish_request();
 }
-
-reply(200, ['ok' => true]);
+ignore_user_abort(true);
+@set_time_limit(60);
+iq_notify_lead($lead);
